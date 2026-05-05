@@ -1,9 +1,8 @@
 package com.andreina.ushi.dao;
 
-import java.util.List;
-
 import com.andreina.ushi.dao.criteria.AnimalCriteria;
 import com.andreina.ushi.model.AnimalDTO;
+import com.andreina.ushi.model.Results;
 
 public class AnimalDAOTest {
 
@@ -27,9 +26,9 @@ public class AnimalDAOTest {
 		AnimalDAO dao = new AnimalDAO();
 		AnimalCriteria criteria = new AnimalCriteria();
 		// criteria.setGranjaId(1L);
-		List<AnimalDTO> animales = dao.findByCriteria(criteria);
-		if (animales != null) {
-			for (AnimalDTO animal : animales) {
+		Results<AnimalDTO> results = dao.findByCriteria(criteria, 1, Integer.MAX_VALUE);
+		if (results != null) {
+			for (AnimalDTO animal : results.getPageResults()) {
 				System.out.println(animal.getId() + " - " + animal.getNumRegistro());
 			}
 		}
