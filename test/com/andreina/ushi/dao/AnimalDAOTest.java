@@ -26,6 +26,8 @@ public class AnimalDAOTest {
 		AnimalDAO dao = new AnimalDAO();
 		AnimalCriteria criteria = new AnimalCriteria();
 		// criteria.setGranjaId(1L);
+		
+		
 		Results<AnimalDTO> results = dao.findByCriteria(criteria, 1, Integer.MAX_VALUE);
 		if (results != null) {
 			for (AnimalDTO animal : results.getPageResults()) {
