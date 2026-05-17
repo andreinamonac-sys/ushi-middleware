@@ -1,5 +1,6 @@
 package com.andreina.ushi.service;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.andreina.ushi.dao.criteria.ParametroCriteria;
@@ -12,12 +13,13 @@ public interface ParametroService {
 	 * @param parametro
 	 * @return
 	 */
-	public ParametroDTO create(ParametroDTO parametro);
+	public Long create(ParametroDTO parametro) throws Exception;
 
 	/**
 	 * Encontrar parametros por criterios de busqueda.
 	 * @param criteria
 	 * @return
 	 */
-	public List<ParametroDTO> findByCriteria(ParametroCriteria criteria, int from, int pageSize);
+	public List<ParametroDTO> findByCriteria(ParametroCriteria criteria,
+			int from, int pageSize) throws Exception;
 }

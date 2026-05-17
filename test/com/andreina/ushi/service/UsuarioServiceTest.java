@@ -11,7 +11,7 @@ public class UsuarioServiceTest {
         this.service = new UsuarioServiceImpl();
     }
 
-    public void testLogin(String email, String password) {
+    public void testLogin(String email, String password) throws Exception {
         System.out.println("--- UsuarioService.login(" + email + ") ---");
         UsuarioDTO usuario = service.login(email, password);
         if (usuario != null) {
@@ -22,7 +22,7 @@ public class UsuarioServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         UsuarioServiceTest test = new UsuarioServiceTest();
         test.testLogin("juan.garcia@email.com", "test123");
     }

@@ -1,5 +1,6 @@
 package com.andreina.ushi.service;
 
+import java.sql.Connection;
 import java.util.List;
 
 public interface MailService {
@@ -10,7 +11,7 @@ public interface MailService {
 	 * @param asunto Asunto del correo
 	 * @param contenido Contenido del correo
 	 */
-	public void sendEmail(String para, String asunto, String contenido);
+	public void sendEmail(String para, String asunto, String contenido, String firma) throws Exception;
 	
 
 	/**
@@ -19,5 +20,5 @@ public interface MailService {
 	 * @param asunto Asunto del correo
 	 * @param contenido Contenido del correo
 	 */
-	public void sendEmail(List<String> para, String asunto, String contenido);
+	public void sendEmail(List<String> para, String asunto, String contenido, String firma) throws Exception;
 }

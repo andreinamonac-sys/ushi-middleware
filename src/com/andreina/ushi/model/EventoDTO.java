@@ -8,16 +8,15 @@ public class EventoDTO extends AbstractValueObject{
 	private Long id=null;
 	private Date fechaDesde=null;
 	private Date fechaHasta=null;
-	
 	private String descripcion=null;
-	
 	private Long tipoEventoId=null;
 	private String nombreTipoEvento=null;
-	
 	private Long animalId=null;
-	private Long animalNumRegistro=null;
+	private String animalNumRegistro=null;
 	private Long criaId=null;
 	private Long veterinarioId=null;
+	private String nombreVeterinario=null;
+	private String apellidoVeterinario=null;
 	private Long semillaId=null;
 	private Long dosisId=null;
 	private Long numDosis=null;
@@ -99,12 +98,12 @@ public class EventoDTO extends AbstractValueObject{
 	}
 
 
-	public Long getAnimalNumRegistro() {
+	public String getAnimalNumRegistro() {
 		return animalNumRegistro;
 	}
 
 
-	public void setAnimalNumRegistro(Long animalNumRegistro) {
+	public void setAnimalNumRegistro(String animalNumRegistro) {
 		this.animalNumRegistro = animalNumRegistro;
 	}
 
@@ -126,6 +125,26 @@ public class EventoDTO extends AbstractValueObject{
 
 	public void setVeterinarioId(Long veterinarioId) {
 		this.veterinarioId = veterinarioId;
+	}
+
+
+	public String getNombreVeterinario() {
+		return nombreVeterinario;
+	}
+
+
+	public void setNombreVeterinario(String nombreVeterinario) {
+		this.nombreVeterinario = nombreVeterinario;
+	}
+
+
+	public String getApellidoVeterinario() {
+		return apellidoVeterinario;
+	}
+
+
+	public void setApellidoVeterinario(String apellidoVeterinario) {
+		this.apellidoVeterinario = apellidoVeterinario;
 	}
 
 
@@ -168,7 +187,6 @@ public class EventoDTO extends AbstractValueObject{
 		this.valorDiagnostico = valorDiagnostico;
 	}
 
-	
 
 	
 }

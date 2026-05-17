@@ -1,17 +1,19 @@
 package com.andreina.ushi.dao;
 
+import java.sql.Connection;
 import java.util.List;
 
 import com.andreina.ushi.dao.criteria.ParametroCriteria;
 import com.andreina.ushi.model.ParametroDTO;
+import com.andreina.ushi.utils.JDBCUtils;
 
 public class ParametroDAOTest {
 
-	private static void findByCriteriaTest() {
+	private static void findByCriteriaTest(Connection c) throws Exception {
 		ParametroDAO dao = new ParametroDAO();
 		ParametroCriteria criteria = new ParametroCriteria();
 		criteria.setAnimalId(1L);
-		List<ParametroDTO> parametros = dao.findByCriteria(criteria);
+		List<ParametroDTO> parametros = dao.findByCriteria(c, criteria,1,10);
 		if (parametros != null) {
 			for (ParametroDTO parametro : parametros) {
 				System.out.println(parametro.getId() + " - " + parametro.getValorParametro());
@@ -19,7 +21,8 @@ public class ParametroDAOTest {
 		}
 	}
 
-	public static void main(String[] args) {
-		findByCriteriaTest();
+	public static void main(String[] args) throws Exception {
+		Connection c = JDBCUtils.getConnection();
+		findByCriteriaTest(c);
 	}
 }

@@ -1,25 +1,22 @@
 package com.andreina.ushi.dao.criteria;
 
+import java.util.Date;
+
 import com.andreina.ushi.model.AbstractValueObject;
 
 public class AnimalCriteria extends AbstractValueObject {
-	
-	public final String ORDER_BY_ID= "a.id";
-	public final String ORDER_BY_NUMREGISTRO= "a.num_registro";
-	
-	private Long id=null;
-	private String numRegistro=null;
-	private Long padreExternoId=null;
-	private Long madreExternaId=null;
-	
-	private Long madreInternaId=null;
-	private Long granjaId=null;
-	private Long sexoId=null;
-	
-	
-	public AnimalCriteria() {
-		
-	}
+
+    private Long id;
+    private String numRegistro;
+    private String sexoDescripcion;
+    private Date fechaNacimiento;
+    private Date fechaAlta;
+    private Date fechaBaja;
+    private String granjaNif;
+    private String numRegistroMadreInterna;
+
+    public AnimalCriteria() {
+    }
 
 	public Long getId() {
 		return id;
@@ -37,47 +34,54 @@ public class AnimalCriteria extends AbstractValueObject {
 		this.numRegistro = numRegistro;
 	}
 
-	public Long getPadreExternoId() {
-		return padreExternoId;
+	public String getSexoDescripcion() {
+		return sexoDescripcion;
 	}
 
-	public void setPadreExternoId(Long padreExternoId) {
-		this.padreExternoId = padreExternoId;
+	public void setSexoDescripcion(String sexoDescripcion) {
+		this.sexoDescripcion = sexoDescripcion;
 	}
 
-	public Long getMadreExternaId() {
-		return madreExternaId;
+	public Date getFechaNacimiento() {
+		return fechaNacimiento;
 	}
 
-	public void setMadreExternaId(Long madreExternaId) {
-		this.madreExternaId = madreExternaId;
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	public Long getMadreInternaId() {
-		return madreInternaId;
+	public Date getFechaAlta() {
+		return fechaAlta;
 	}
 
-	public void setMadreInternaId(Long madreInternaId) {
-		this.madreInternaId = madreInternaId;
+	public void setFechaAlta(Date fechaAlta) {
+		this.fechaAlta = fechaAlta;
 	}
 
-	public Long getGranjaId() {
-		return granjaId;
+	public Date getFechaBaja() {
+		return fechaBaja;
 	}
 
-	public void setGranjaId(Long granjaId) {
-		this.granjaId = granjaId;
+	public void setFechaBaja(Date fechaBaja) {
+		this.fechaBaja = fechaBaja;
 	}
 
-	public Long getSexoId() {
-		return sexoId;
+	public String getGranjaNif() {
+		return granjaNif;
 	}
 
-	public void setSexoId(Long sexoId) {
-		this.sexoId = sexoId;
+	public void setGranjaNif(String granjaNif) {
+		this.granjaNif = granjaNif;
 	}
 
-	
-	
+	public String getNumRegistroMadreInterna() {
+		return numRegistroMadreInterna;
+	}
+
+	public void setNumRegistroMadreInterna(String numRegistroMadreInterna) {
+		this.numRegistroMadreInterna = numRegistroMadreInterna;
+	}
+
+    
 }
 

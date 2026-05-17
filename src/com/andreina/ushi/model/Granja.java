@@ -4,6 +4,7 @@ public class Granja extends AbstractValueObject {
 	private Long id=null;
 	private String nif=null;
 	private String calle=null;
+	private Integer numero=null;
 	private Long cp=null;
 	
 	public Granja() {
@@ -34,6 +35,14 @@ public class Granja extends AbstractValueObject {
 		this.calle = calle;
 	}
 
+	public Integer getNumero() {
+		return numero;
+	}
+
+	public void setNumero(Integer numero) {
+		this.numero = numero;
+	}
+
 	public Long getCp() {
 		return cp;
 	}
@@ -41,5 +50,7 @@ public class Granja extends AbstractValueObject {
 	public void setCp(Long cp) {
 		this.cp = cp;
 	}
+
+	
 	
 }

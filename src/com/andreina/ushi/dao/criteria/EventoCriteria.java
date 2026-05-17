@@ -3,20 +3,15 @@ package com.andreina.ushi.dao.criteria;
 import java.util.Date;
 
 public class EventoCriteria {
-	private Long id=null;
-	private Date fechaDesde=null;
-	private Date fechaHasta=null;
-	private String descripcion=null;
-	
-	private Long tipoEventoId=null;
-	private String nombreTipoEvento=null;
-	
-	private Long animalId=null;
-	private Long semillaId=null;
-	private Long dosisId=null;
-	private Long valorDiagnostico=null;
-	private Long criaId=null;
-	private Long veterinarioId=null;
+	private Long id;
+	private String numRegistro;
+    private Date fechaDesde;
+    private Date fechaHasta;
+    private String descripcion;
+    private Long tipoEventoId;
+    private Long animalId;
+    private String valorDiagnostico;  
+    private Long veterinarioId;
 	
 	EventoCriteria(){
 		
@@ -28,6 +23,14 @@ public class EventoCriteria {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getNumRegistro() {
+		return numRegistro;
+	}
+
+	public void setNumRegistro(String numRegistro) {
+		this.numRegistro = numRegistro;
 	}
 
 	public Date getFechaDesde() {
@@ -62,14 +65,6 @@ public class EventoCriteria {
 		this.tipoEventoId = tipoEventoId;
 	}
 
-	public String getNombreTipoEvento() {
-		return nombreTipoEvento;
-	}
-
-	public void setNombreTipoEvento(String nombreTipoEvento) {
-		this.nombreTipoEvento = nombreTipoEvento;
-	}
-
 	public Long getAnimalId() {
 		return animalId;
 	}
@@ -78,36 +73,12 @@ public class EventoCriteria {
 		this.animalId = animalId;
 	}
 
-	public Long getSemillaId() {
-		return semillaId;
-	}
-
-	public void setSemillaId(Long semillaId) {
-		this.semillaId = semillaId;
-	}
-
-	public Long getDosisId() {
-		return dosisId;
-	}
-
-	public void setDosisId(Long dosisId) {
-		this.dosisId = dosisId;
-	}
-
-	public Long getValorDiagnostico() {
+	public String getValorDiagnostico() {
 		return valorDiagnostico;
 	}
 
-	public void setValorDiagnostico(Long valorDiagnostico) {
+	public void setValorDiagnostico(String valorDiagnostico) {
 		this.valorDiagnostico = valorDiagnostico;
-	}
-
-	public Long getCriaId() {
-		return criaId;
-	}
-
-	public void setCriaId(Long criaId) {
-		this.criaId = criaId;
 	}
 
 	public Long getVeterinarioId() {
@@ -117,10 +88,4 @@ public class EventoCriteria {
 	public void setVeterinarioId(Long veterinarioId) {
 		this.veterinarioId = veterinarioId;
 	}
-
-	
-	
-	
-
-		
 }

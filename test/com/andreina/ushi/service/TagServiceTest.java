@@ -13,7 +13,7 @@ public class TagServiceTest {
         this.service = new TagServiceImpl();
     }
 
-    public void testFindById(Long id) {
+    public void testFindById(Long id) throws Exception {
         System.out.println("--- TagService.findById(" + id + ") ---");
         Tag tag = service.findById(id);
         if (tag != null) {
@@ -24,7 +24,7 @@ public class TagServiceTest {
         System.out.println();
     }
 
-    public void testFindDisponible() {
+    public void testFindDisponible() throws Exception {
         System.out.println("--- TagService.findDisponible ---");
         List<Tag> tags = service.findDisponible();
         if (tags != null && !tags.isEmpty()) {
@@ -37,7 +37,7 @@ public class TagServiceTest {
         System.out.println();
     }
 
-    public void testFindConIncidencias() {
+    public void testFindConIncidencias()throws Exception {
         System.out.println("--- TagService.findConIncidencias ---");
         List<Tag> tags = service.findConIncidencias();
         if (tags != null && !tags.isEmpty()) {
@@ -50,7 +50,7 @@ public class TagServiceTest {
         System.out.println();
     }
 
-    public void testFindByAnimalId(Long animalId) {
+    public void testFindByAnimalId(Long animalId)throws Exception {
         System.out.println("--- TagService.findByAnimalId(" + animalId + ") ---");
         List<Tag> tags = service.findByAnimalId(animalId);
         if (tags != null && !tags.isEmpty()) {
@@ -63,10 +63,10 @@ public class TagServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)throws Exception {
         TagServiceTest test = new TagServiceTest();
-        test.testFindById(1L);
-//        test.testFindDisponible();
+        //test.testFindById(1L);
+       test.testFindDisponible();
 //        test.testFindConIncidencias();
 //        test.testFindByAnimalId(1L);
     }

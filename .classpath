@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/commons-email/smtp-1.6.2.jar"/>
 	<classpathentry kind="lib" path="lib/mysql/mysql-connector-j-9.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j2/log4j-api-2.12.4.jar"/>
+	<classpathentry kind="lib" path="lib/log4j2/log4j-core-2.12.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

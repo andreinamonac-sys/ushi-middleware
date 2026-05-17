@@ -14,11 +14,11 @@ public class ParametroServiceTest {
         this.service = new ParametroServiceImpl();
     }
 
-    public void testFindByCriteria(Long animalId) {
+    public void testFindByCriteria(Long animalId) throws Exception {
         System.out.println("--- ParametroService.findByCriteria(animalId=" + animalId + ") ---");
         ParametroCriteria criteria = new ParametroCriteria();
         criteria.setAnimalId(animalId);
-        List<ParametroDTO> parametros = service.findByCriteria(criteria);
+        List<ParametroDTO> parametros = service.findByCriteria(criteria, 1, 10);
         if (parametros != null && !parametros.isEmpty()) {
             for (ParametroDTO parametro : parametros) {
                 System.out.println(parametro.getId() + " - " + parametro.getValorParametro());
@@ -29,7 +29,7 @@ public class ParametroServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)throws Exception {
         ParametroServiceTest test = new ParametroServiceTest();
         test.testFindByCriteria(1L);
     }

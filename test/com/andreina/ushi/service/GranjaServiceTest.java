@@ -13,7 +13,7 @@ public class GranjaServiceTest {
         this.service = new GranjaServiceImpl();
     }
 
-    public void testFindById(Long id) {
+    public void testFindById(Long id)throws Exception {
         System.out.println("--- GranjaService.findById(" + id + ") ---");
         GranjaDTO granja = service.findById(id);
         if (granja != null) {
@@ -24,7 +24,7 @@ public class GranjaServiceTest {
         System.out.println();
     }
 
-    public void testFindByNif(String nif) {
+    public void testFindByNif(String nif)throws Exception {
         System.out.println("--- GranjaService.findByNif(" + nif + ") ---");
         GranjaDTO granja = service.findByNif(nif);
         if (granja != null) {
@@ -35,7 +35,7 @@ public class GranjaServiceTest {
         System.out.println();
     }
 
-    public void testFindByEncargadoId(Long usuarioId) {
+    public void testFindByEncargadoId(Long usuarioId) throws Exception {
         System.out.println("--- GranjaService.findByEncargadoId(" + usuarioId + ") ---");
         List<GranjaDTO> granjas = service.findByEncargadoId(usuarioId);
         if (granjas != null && !granjas.isEmpty()) {
@@ -48,7 +48,7 @@ public class GranjaServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         GranjaServiceTest test = new GranjaServiceTest();
         test.testFindById(1L);
 //        test.testFindByNif("B12345678");

@@ -13,7 +13,7 @@ public class EventoServiceTest {
         this.service = new EventoServiceImpl();
     }
 
-    public void testFindById(Long id) {
+    public void testFindById(Long id)throws Exception {
         System.out.println("--- EventoService.findById(" + id + ") ---");
         EventoDTO evento = service.findById(id);
         if (evento != null) {
@@ -24,9 +24,9 @@ public class EventoServiceTest {
         System.out.println();
     }
 
-    public void testFindByTipo(Long tipoEventoId) {
+    public void testFindByTipo(Long tipoEventoId)throws Exception {
         System.out.println("--- EventoService.findByTipo(" + tipoEventoId + ") ---");
-        List<EventoDTO> eventos = service.findByTipo(tipoEventoId);
+        List<EventoDTO> eventos = service.findByTipoEventoId(tipoEventoId);
         if (eventos != null && !eventos.isEmpty()) {
             for (EventoDTO evento : eventos) {
                 System.out.println(evento.getId() + " - " + evento.getDescripcion());
@@ -37,7 +37,7 @@ public class EventoServiceTest {
         System.out.println();
     }
 
-    public void testFindByAnimalId(Long animalId) {
+    public void testFindByAnimalId(Long animalId) throws Exception {
         System.out.println("--- EventoService.findByAnimalId(" + animalId + ") ---");
         List<EventoDTO> eventos = service.findByAnimalId(animalId);
         if (eventos != null && !eventos.isEmpty()) {
@@ -50,7 +50,7 @@ public class EventoServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         EventoServiceTest test = new EventoServiceTest();
         test.testFindById(1L);
 //        test.testFindByTipo(1L);

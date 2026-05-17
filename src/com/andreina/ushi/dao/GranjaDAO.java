@@ -1,272 +1,234 @@
 package com.andreina.ushi.dao;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.andreina.ushi.model.EventoDTO;
 import com.andreina.ushi.model.GranjaDTO;
 import com.andreina.ushi.utils.DAOUtils;
-
+import com.andreina.ushi.utils.JDBCUtils;
 public class GranjaDAO {
 
-	private static final String BASE_QUERY = 
-			"SELECT g.id, g.nif, g.calle, g.CP, g.usuario_id, "
-			+ "u.nombre AS usuario_nombre "
-			+ "FROM granja g "
-			+ "LEFT JOIN usuario u ON u.id = g.usuario_id";
+    private static final Logger logger = LogManager.getLogger(GranjaDAO.class.getName());
 
-	public GranjaDAO() {
-		
-	}
+    private static final String BASE_QUERY =
+            "SELECT g.id, g.nif, g.calle, g.numero, g.CP, g.usuario_id, "
+            + "u.nombre AS usuario_nombre "
+            + "FROM granja g "
+            + "LEFT JOIN usuario u ON u.id = g.usuario_id";
+    private static final String ORDER_BY= " ORDER BY g.id DESC";
 
-	/**
-	 * Crear una nueva granja.
-	 * @param granja
-	 * @return
+    public GranjaDAO() {
+    }
+
+    /**
+	 * Crea un nuevo registro de granja en la base de datos.
+	 * @param c Conexión a la base de datos.
+	 * @param granja Objeto GranjaDTO con los datos de la granja a
+	 * return GranjaDTO con el id generado.
+	 * @throws Exception si ocurre un error al acceder o procesar datos.
 	 */
-	public GranjaDTO create(GranjaDTO granja) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+    public GranjaDTO create(Connection c, GranjaDTO granja) throws Exception {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = "INSERT INTO granja (nif, calle,numero, CP, usuario_id) "
+            		+ "VALUES (?, ?, ?, ?)";
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            DAOUtils.setParameters(ps, granja.getNif(), granja.getCalle(), granja.getCp(), granja.getUsuarioId());
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    granja.setId(rs.getLong(1));
+                    logger.info("Granja creada con id: {}", granja.getId());
+                }
+            }
+            return granja;
+        } catch (Exception e) {
+            logger.error("Error creando granja con nif: {}, Message: {}", granja.getNif(), e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
 
-		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("INSERT INTO granja (nif, calle, CP, usuario_id) ");
-			sqlBuilder.append("VALUES (?, ?, ?, ?)");
-			ps = c.prepareStatement(sqlBuilder.toString(), PreparedStatement.RETURN_GENERATED_KEYS);
-			int i = 1;
-			ps.setString(i++, granja.getNif());
-			ps.setString(i++, granja.getCalle());
-			ps.setLong(i++, granja.getCp());
-			ps.setLong(i++, granja.getUsuarioId());
+    /**
+     * Actualiza un registro de granja existente en la base de datos.
+     * @param c
+     * @param granja
+     * @return
+     * @throws Exception
+     */
+    public GranjaDTO update(Connection c, GranjaDTO granja) throws Exception {
+        PreparedStatement ps = null;
+        try {
+            String sql = "UPDATE granja SET nif = ?, calle = ?, numero= ?, CP = ?, "
+            		+ "usuario_id = ? WHERE id = ?";
+            logger.info("Actualizando granja con id: {}", granja.getId());
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, granja.getNif(), granja.getCalle(),
+					            		granja.getNumero(),granja.getCp(), 
+					            		granja.getUsuarioId(), granja.getId());
+            int updatedRows = ps.executeUpdate();
+            logger.info("Granja con id: {} actualizada, filas afectadas: {}", granja.getId(), updatedRows);
+            return updatedRows == 1 ? granja : null;
+        } catch (Exception e) {
+            logger.error("Error actualizando granja con id: {}, Message: {}", granja.getId(), e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(null, ps);
+        }
+    }
 
-			ps.executeUpdate();
-
-			rs = ps.getGeneratedKeys();
-			if (rs.next()) {
-				granja.setId(rs.getLong(1));
-			}
-			return granja;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Actualizar una granja existente.
-	 * @param granja
-	 * @return
-	 */
-	public GranjaDTO update(GranjaDTO granja) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("UPDATE granja SET nif = ?, calle = ?, CP = ?, usuario_id = ? ");
-			sqlBuilder.append("WHERE id = ?");
-			ps = c.prepareStatement(sqlBuilder.toString());
-			int i = 1;
-			ps.setString(i++, granja.getNif());
-			ps.setString(i++, granja.getCalle());
-			ps.setLong(i++, granja.getCp());
-			ps.setLong(i++, granja.getUsuarioId());
-			ps.setLong(i++, granja.getId());
-
-			ps.executeUpdate();
-			return granja;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(null, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Eliminar una granja por su id (borrado logico). Solo permite granjas sin animales.
+   /**
+	 * Elimina un registro de granja de la base de datos.
+	 * @param c
 	 * @param id
-	 */
-	public boolean delete(Long id) {
-		Connection c = null;
-		PreparedStatement ps = null;
-
-		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("UPDATE granja g SET g.activo = 0 ");
-			sqlBuilder.append("WHERE g.id = ? AND NOT EXISTS (SELECT 1 FROM animal a WHERE a.granja_id = g.id)");
-			ps = c.prepareStatement(sqlBuilder.toString());
-			int i = 1;
-			ps.setLong(i++, id);
-			int deleted = ps.executeUpdate();			
-			return deleted>0;
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(null, ps, c);
-		}
-		return false;
-	}
-
-	/**
-	 * Encontrar granja por su id.
-	 * @param id
-	 * @return
-	 */
-	public GranjaDTO findById(Long id) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			c = DAOUtils.getConnection();
-
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" WHERE g.id = ? ");
-
-			ps = c.prepareStatement(sqlBuilder.toString());
-			DAOUtils.setParameters(ps, id);
-			rs = ps.executeQuery();
-
-			GranjaDTO granja = null;
-			if (rs.next()) {
-				granja = loadNext(rs);
-			}
-			return granja;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Encontrar granja por su nif.
-	 * @param nif
-	 * @return
-	 */
-	public GranjaDTO findByNif(String nif) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			c = DAOUtils.getConnection();
-
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" WHERE g.nif = ? ");
-
-			ps = c.prepareStatement(sqlBuilder.toString());
-			DAOUtils.setParameters(ps, nif);
-			rs = ps.executeQuery();
-
-			GranjaDTO granja = null;
-			if (rs.next()) {
-				granja = loadNext(rs);
-			}
-			return granja;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Encontrar granjas por su encargado (usuario_id).
-	 * @param usuarioId
-	 * @return
-	 */
-	public List<GranjaDTO> findByEncargadoId(Long usuarioId) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			c = DAOUtils.getConnection();
-
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" WHERE g.usuario_id = ? ");
-
-			ps = c.prepareStatement(sqlBuilder.toString());
-			DAOUtils.setParameters(ps, usuarioId);
-			rs = ps.executeQuery();
-
-			List<GranjaDTO> granjas = new ArrayList<>();
-			while (rs.next()) {
-				granjas.add(loadNext(rs));
-			}
-			return granjas;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Listar todas las granjas.
-	 * @return
-	 */
-	public List<GranjaDTO> findAll() {
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" ORDER BY g.id ASC ");
-
-			ps = c.prepareStatement(sqlBuilder.toString());
-			rs = ps.executeQuery();
-
-			List<GranjaDTO> granjas = new ArrayList<>();
-			while (rs.next()) {
-				granjas.add(loadNext(rs));
-			}
-			return granjas;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
-	}
-
-	/**
-	 * Cargar una granja desde el ResultSet actual.
-	 * @param rs
 	 * @return
 	 * @throws Exception
 	 */
-	private GranjaDTO loadNext(ResultSet rs) throws Exception {
-		int i = 1;
-		GranjaDTO granja = new GranjaDTO();
+    public boolean delete(Connection c, Long id) throws Exception {
+        PreparedStatement ps = null;
+        try {
+        	String sql = "UPDATE granja SET activo = 0 WHERE id = ?";
+            logger.info("Eliminando granja con id: {}", id);
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, id);
+            int deleted = ps.executeUpdate();
+            logger.info("Granja con id: {} eliminada, filas afectadas: {}", id, deleted);
+            return deleted == 1;
+        } catch (Exception e) {
+            logger.error("Error eliminando granja con id: {}, Message: {}", id, e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(null, ps);
+        }
+    }
 
-		granja.setId(rs.getLong(i++));
-		granja.setNif(rs.getString(i++));
-		granja.setCalle(rs.getString(i++));
-		granja.setCp(rs.getLong(i++));
-		granja.setUsuarioId(rs.getLong(i++));
-		granja.setUsuarioNombre(rs.getString(i++));
+    /**
+     * Busca un registro de granja por su id en la base de datos.
+     * @param c
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public GranjaDTO findById(Connection c, Long id) throws Exception {
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = BASE_QUERY + " WHERE g.id = ?";
+            logger.info("Buscando granja con id: {}", id);
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, id);
+            rs = ps.executeQuery();
+            return rs.next() ? loadNext(rs) : null;
+        } catch (Exception e) {
+            logger.error("Error encontrando granja con id: {}, Message: {}", id, e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
 
-		return granja;
-	}
+    /**
+     * Ejecuta la operacion DAO correspondiente.
+     * @throws Exception si ocurre un error al acceder o procesar datos.
+     */
+    public GranjaDTO findByNif(Connection c, String nif) throws Exception {
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = BASE_QUERY + " WHERE g.nif = ?";
+            logger.info("Buscando granja con nif: {}", nif);
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, nif);
+            rs = ps.executeQuery();
+            return rs.next() ? loadNext(rs) : null;
+        } catch (Exception e) {
+            logger.error("Error encontrando granja con nif: {}, Message: {}", nif, e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
+
+    /**
+     * Ejecuta la operacion DAO correspondiente.
+     * @param c
+     * @param usuarioId
+     * @return
+     * @throws Exception
+     */
+    public List<GranjaDTO> findByEncargadoId(Connection c, Long usuarioId) throws Exception {
+    	PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = BASE_QUERY + " WHERE g.usuario_id = ?" + ORDER_BY;
+            logger.info("Buscando eventos con animal_id: {}", usuarioId);
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, usuarioId);
+            rs = ps.executeQuery();
+            List<GranjaDTO> usuarios = new ArrayList<>();
+            while (rs.next()) {
+               usuarios.add(loadNext(rs));
+            }
+            return usuarios;
+        } catch (Exception e) {
+            logger.error("Error encontrando usuarios con usuario_id: {}, Message: {}", usuarioId, e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
+
+    /**
+     * Ejecuta la operacion DAO correspondiente.
+     * @throws Exception si ocurre un error al acceder o procesar datos.
+     */
+    public List<GranjaDTO> findAll(Connection c) throws Exception {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            String sql = BASE_QUERY + ORDER_BY;
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            rs = ps.executeQuery();
+            List<GranjaDTO> granjas = new ArrayList<>();
+            while (rs.next()) {
+                granjas.add(loadNext(rs));
+            }
+            logger.info("Encontradas {} granjas", granjas.size());
+            return granjas;
+        } catch (Exception e) {
+        	logger.error("Error listando todas las granjas: {}", e.getMessage(), e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
+
+    private GranjaDTO loadNext(ResultSet rs) throws Exception {
+        int i = 1;
+        GranjaDTO granja = new GranjaDTO();
+        granja.setId(rs.getLong(i++));
+        granja.setNif(rs.getString(i++));
+        granja.setCalle(rs.getString(i++));
+        granja.setCp(rs.getLong(i++));
+        granja.setUsuarioId(rs.getLong(i++));
+        granja.setUsuarioNombre(rs.getString(i++));
+        return granja;
+    }
 }

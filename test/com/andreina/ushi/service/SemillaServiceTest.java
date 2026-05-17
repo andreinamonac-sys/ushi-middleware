@@ -13,7 +13,7 @@ public class SemillaServiceTest {
         this.service = new SemillaServiceImpl();
     }
 
-    public void testFindTopByItp(Integer limite) {
+    public void testFindTopByItp(Integer limite) throws Exception {
         System.out.println("--- SemillaService.findTopByItp(" + limite + ") ---");
         List<Semilla> semillas = service.findTopByItp(limite);
         if (semillas != null && !semillas.isEmpty()) {
@@ -26,7 +26,7 @@ public class SemillaServiceTest {
         System.out.println();
     }
 
-    public void testFindByMeritoNetoGreaterThan(Integer minimo) {
+    public void testFindByMeritoNetoGreaterThan(Integer minimo)throws Exception {
         System.out.println("--- SemillaService.findByMeritoNetoGreaterThan(" + minimo + ") ---");
         List<Semilla> semillas = service.findByMeritoNetoGreaterThan(minimo);
         if (semillas != null && !semillas.isEmpty()) {
@@ -39,7 +39,7 @@ public class SemillaServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         SemillaServiceTest test = new SemillaServiceTest();
         test.testFindTopByItp(5);
 //        test.testFindByMeritoNetoGreaterThan(50);

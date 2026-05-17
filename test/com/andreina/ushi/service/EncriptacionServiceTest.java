@@ -10,7 +10,7 @@ public class EncriptacionServiceTest {
         this.service = new EncriptacionServiceBCryptImpl();
     }
 
-    public void testEncryptAndVerify(String plain) {
+    public void testEncryptAndVerify(String plain) throws Exception {
         System.out.println("--- EncriptacionService.encrypt/verify ---");
         String hash = service.encrypt(plain);
         System.out.println("plain=" + plain);
@@ -20,7 +20,7 @@ public class EncriptacionServiceTest {
         System.out.println();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         EncriptacionServiceTest test = new EncriptacionServiceTest();
         test.testEncryptAndVerify("test123");
     }

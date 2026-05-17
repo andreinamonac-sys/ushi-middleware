@@ -1,14 +1,16 @@
 package com.andreina.ushi.model;
 
+import java.util.Date;
+
 public class Animal extends AbstractValueObject {
 	
 	private Long id=null;
 	private String numRegistro=null;
 	private Long padreExternoId=null;
 	private Long madreExternaId=null;
-	// TODO: fechaNacimiento
-	// TODO: fechaAlta opcional
-	// TODO: fechaBaja
+	private Date fechaNacimiento=null;
+	private Date fechaAlta=null;
+	private Date fechaBaja=null;
 	
 	public Animal() {
 		
@@ -45,6 +47,31 @@ public class Animal extends AbstractValueObject {
 	public void setMadreExternaId(Long madreExternaId) {
 		this.madreExternaId = madreExternaId;
 	}
+
+	public Date getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
+	public Date getFechaAlta() {
+		return fechaAlta;
+	}
+
+	public void setFechaAlta(Date fechaAlta) {
+		this.fechaAlta = fechaAlta;
+	}
+
+	public Date getFechaBaja() {
+		return fechaBaja;
+	}
+
+	public void setFechaBaja(Date fechaBaja) {
+		this.fechaBaja = fechaBaja;
+	}
+	
 	
 	
 }

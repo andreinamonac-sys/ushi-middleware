@@ -3,6 +3,7 @@ package com.andreina.ushi.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,300 +14,280 @@ import com.andreina.ushi.dao.criteria.AnimalCriteria;
 import com.andreina.ushi.model.AnimalDTO;
 import com.andreina.ushi.model.Results;
 import com.andreina.ushi.utils.DAOUtils;
+import com.andreina.ushi.utils.JDBCUtils;
 import com.andreina.ushi.utils.SQLUtils;
 
 public class AnimalDAO {
-	
+
 	private static Logger logger = 
 			LogManager.getLogger(AnimalDAO.class.getName());
-	
+
 	private static final String BASE_QUERY = 
-		    "SELECT a.id, a.num_registro, a.granja_id, a.sexo_id, "
-		    + "s.descripcion AS sexo_descripcion, "
-		    + "a.id_padre_externo, "
-		    + "a.id_madre_externa, "
-		    + "a.id_madre_interna, "
-		    + "madre_interna.num_registro AS num_registro_madre_interna, "
-		    + "g.nif AS granja_nif "
-		    + "FROM animal a "
-		    + "INNER JOIN sexo s ON s.id = a.sexo_id "
-		    + "LEFT JOIN animal madre_interna ON madre_interna.id = a.id_madre_interna "
-		    + "INNER JOIN granja g ON g.id = a.granja_id";
+			"SELECT a.id, a.num_registro,a.sexo_id, a.fecha_nacimiento,a.fecha_alta,"
+					+ "a.fecha_baja,a.granja_id, "
+					+ "s.descripcion AS sexo_descripcion, "
+					+ "a.id_padre_externo, "
+					+ "a.id_madre_externa, "
+					+ "a.id_madre_interna, "
+					+ "madre_interna.num_registro AS num_registro_madre_interna, "
+					+ "g.nif AS granja_nif "
+					+ "FROM animal a "
+					+ "INNER JOIN sexo s ON s.id = a.sexo_id "
+					+ "LEFT JOIN animal madre_interna ON madre_interna.id = a.id_madre_interna "
+					+ "INNER JOIN granja g ON g.id = a.granja_id ";
+					
+	private static final String ORDER_BY = " ORDER BY a.id DESC";
 	
 	public AnimalDAO() {		
 	}
-	
+
 	/**
 	 * Crear un nuevo animal. 
 	 * @param animal
-	 * @return
+	 * @throws Exception
+	 * @return El animal creado con su id generado.
 	 */
-	public AnimalDTO create(AnimalDTO animal) {
-		
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		try {
-			// obtener la conexion
-			c = DAOUtils.getConnection();
-
-			// preparar la consulta			
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("INSERT INTO evento (id, num_registro, id_padre_externo, id_madre_externa, granja_id,");
-			sqlBuilder.append(" id_madre_interna, sexo_id) ");
-			sqlBuilder.append("\nVALUES (?, ?, ?, ?, ?, ?, ?)");
-
-			// crear el PreparedStatement
-			ps = c.prepareStatement(sqlBuilder.toString(), PreparedStatement.RETURN_GENERATED_KEYS); 
-
-			// asignar los valores a los parametros
-			int i = 1; // contador de parametros
-			ps.setString(i++, animal.getNumRegistro());
-			
-
-			// ejecutar la consulta
-			ps.executeUpdate(); // para operaciones de insercion, actualizacion y borrado se pone update porque lo que se hace es MODIFICAR la BD
-
-			// obtener la clave generada
-			rs = ps.getGeneratedKeys();
-			if (rs.next()) {
-				animal.setId(rs.getLong(1));
-			} 
-			return animal;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
+	public AnimalDTO create(Connection c, AnimalDTO animal) throws Exception {
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    try {
+	        String sql = " INSERT INTO animal (num_registro, sexo_id, "
+	                   + "fecha_nacimiento, fecha_alta, fecha_baja, granja_id, "
+	                   + "id_padre_externo, id_madre_externa, id_madre_interna) "
+	                   + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " + ORDER_BY;
+	        
+	        logger.debug("Executing SQL: {}", sql);
+	        ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	        DAOUtils.setParameters(ps,animal.getNumRegistro(), 
+	                              animal.getSexoId(), animal.getFechaNacimiento(),
+	                              animal.getFechaAlta(), animal.getFechaBaja(),
+	                              animal.getGranjaId(), animal.getPadreExternoId(),
+	                              animal.getMadreExternaId(), animal.getMadreInternaId());
+	        int affectedRows = ps.executeUpdate();
+            if (affectedRows > 0) {
+                rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                   animal.setId(rs.getLong(1));
+                   logger.info("Animal creado con id: {}", animal.getId());
+                }
+            }
+	        
+	    } catch (Exception e) {
+	    	logger.error("Error creando animal con numRegistro: {} - Message: {}", 
+	                animal.getNumRegistro(), e.getMessage(), e);
+	        throw e;
+	    } finally {
+	        JDBCUtils.close(rs, ps);
+	    }
+	    return animal;
 	}
-
-	
 	/**
 	 * Actualizar un animal existente. El id del animal a actualizar debe estar presente en el DTO.
 	 * @param animal
-	 * @return
+	 * @throws Exception
+	 * @return Animal actualizado y filas afectadas.
 	 */
-	public AnimalDTO update(AnimalDTO animal) {
-		Connection c = null;
-		PreparedStatement ps = null;
-		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("UPDATE evento SET id = ?, num_registro = ?, id_padre_externo = ?, ");
-			sqlBuilder.append("id_madre_externa = ?, granja_id = ?, id_madre_interna = ?, sexo_id = ?, ");
-			sqlBuilder.append("WHERE id = ?");
-			ps = c.prepareStatement(sqlBuilder.toString());
-			int i = 1;
-			
-			ps.setString(i++, animal.getNumRegistro());
-			
-			
-			ps.executeUpdate();			
-			return animal;		
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DAOUtils.close(null, ps, c);
-		}
-		return null;
+	public boolean update(Connection c, AnimalDTO animal) throws Exception {
+
+	    PreparedStatement ps = null;
+	    try {
+	        java.sql.Date fechaNac = new java.sql.Date(animal.getFechaNacimiento().getTime());
+	        java.sql.Timestamp fechaAlta = new java.sql.Timestamp(animal.getFechaAlta().getTime());
+	        java.sql.Timestamp fechaBaja = animal.getFechaBaja() != null
+	                ? new java.sql.Timestamp(animal.getFechaBaja().getTime()) : null;
+
+	        String sql = "UPDATE animal SET num_registro = ?, sexo_id = ?, fecha_nacimiento = ?, "
+	                   + "fecha_alta = ?, fecha_baja = ?, granja_id = ?, "
+	                   + "id_padre_externo = ?, id_madre_externa = ?, id_madre_interna = ? "
+	                   + "WHERE id = ?"+ ORDER_BY;
+
+	        logger.info("Actualizando animal con id: {}", animal.getId());
+	        logger.debug("Executing SQL: {}", sql);
+
+	        ps = c.prepareStatement(sql);
+	        DAOUtils.setParameters(ps,
+	                animal.getNumRegistro(), animal.getSexoId(),
+	                fechaNac, fechaAlta, fechaBaja, animal.getGranjaId(),
+	                animal.getPadreExternoId(), animal.getMadreExternaId(),
+	                animal.getMadreInternaId(), animal.getId());
+
+	        int updatedRows = ps.executeUpdate();
+	        logger.info("Animal con id: {} actualizado, filas afectadas: {}", animal.getId(), updatedRows);
+	        return updatedRows == 1;
+
+	    } catch (Exception e) {
+	        logger.error("Animal con id: {}, Message: {}", animal.getId(), e.getMessage(), e);
+	        throw e;
+	    } finally {
+	        JDBCUtils.close(null, ps);
+	    }
 	}
-	
+
 	/**
 	 * Eliminar un animal por su id.
 	 * @param id
+	 * @throws Exception
+	 * @return true si se eliminó un animal, false si no se encontró el id
 	 */
-	public boolean delete(Long id) {
-		Connection c = null;
+	public boolean delete(Connection c, Long id) throws Exception {
+
 		PreparedStatement ps = null;
-		
 		try {
-			c = DAOUtils.getConnection();
-			StringBuilder sqlBuilder = new StringBuilder();
-			sqlBuilder.append("DELETE FROM animal WHERE id = ?");
-			ps = c.prepareStatement(sqlBuilder.toString());
+			String sql = "DELETE FROM animal WHERE id = ?";
+			logger.info("Eliminando animal con id: {}", id);
+			logger.debug("Executing SQL: {}", sql );
+			ps = c.prepareStatement(sql );
 			int i = 1;
 			ps.setLong(i++, id);
-			int deleted = ps.executeUpdate();			
-			return deleted>0;
+			int deleted = ps.executeUpdate();	
+			logger.info("Animal con id: {} eliminado, filas afectadas: {}", id, deleted);
+			return deleted==1;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error eliminando animal con id: {}, Message: {}", id, e.getMessage(), e);
+			throw e;
 		} finally {
-			DAOUtils.close(null, ps, c);
+			JDBCUtils.close(null, ps);
 		}
-		return false;
 	}
-	
+
 	/**
 	 * Encontrar animal por su id.
 	 * @param id
-	 * @return
+	 * @throws Exception
+	 * @return El animal encontrado.
 	 */
-	public AnimalDTO findById(Long id) {
-		Connection c = null;
+	public AnimalDTO findById(Connection c, Long id) throws Exception {
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-
+		AnimalDTO animal = null;
 		try {			
-			// obtener la conexion
-			c = DAOUtils.getConnection();
-
-			// preparar la consulta
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" WHERE a.id = ? ");
-
-			// crear el PreparedStatement y ejecutar la consulta.
-			ps = c.prepareStatement(sqlBuilder.toString());
+			String sql = BASE_QUERY + " WHERE a.id = ? ";
+			logger.info("Buscando animal con id: {}", id);
+			logger.debug("Executing SQL: {}", sql);
+			ps = c.prepareStatement(sql);
 			DAOUtils.setParameters(ps, id);				
 			rs = ps.executeQuery();
-
-			AnimalDTO animal = null; 	
 			
 			if (rs.next()) {
-				
 				animal= loadNext(rs);
-				
+				 logger.info("Animal encontrado: {}", animal);
 			}
-			
 			return animal;				
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error encontrando animal con id: {}, Message: {}",id, e.getMessage(), e);
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
 
 	/**
 	 * Encontrar animal por su num_registro.
 	 * @param numRegistro
-	 * @return
+	 * @throws Exception
+	 * @return El animal encontrado.
 	 */
-	public AnimalDTO findByNumRegistro(String numRegistro) {
-		Connection c = null;
+	public AnimalDTO findByNumRegistro(Connection c, String numRegistro) throws Exception {
+
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		AnimalDTO animal = null; 
 
 		try {			
-			// obtener la conexion
-			c = DAOUtils.getConnection();
-
-			// preparar la consulta
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			sqlBuilder.append(" WHERE a.num_registro = ? ");
-
-			// crear el PreparedStatement y ejecutar la consulta.
-			ps = c.prepareStatement(sqlBuilder.toString());
+			String sql = BASE_QUERY + " WHERE a.num_registro = ? ";
+			logger.info("Buscando animal con numRegistro: {}", numRegistro);
+			logger.debug("Executing SQL: {}", sql);
+			
+			ps = c.prepareStatement(sql);
 			DAOUtils.setParameters(ps, numRegistro);				
 			rs = ps.executeQuery();
-
-			AnimalDTO animal = null; 	
-			
 			if (rs.next()) {
-				
 				animal = loadNext(rs);
-				
+				logger.info("Animal encontrado: {}", animal);
 			}
-			
-			return animal;				
+			return animal;			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error encontrando animal con numRegistro: {}, Message: {}", numRegistro, e.getMessage(), e);
+			throw e;
 		} finally {
-			DAOUtils.close(rs, ps, c);
+			JDBCUtils.close(rs, ps);
 		}
-		return null;
 	}
-	
+
 	/**
 	 * Encontrar animales por sus atributos. Puede que alguno de los parametros sea null.
 	 * @param criteria
-	 * @return
+	 * @throws Exception
+	 * @return Resultados paginados de animales que cumplen los criterios de búsqueda.
 	 */
-	public Results<AnimalDTO> findByCriteria(AnimalCriteria criteria, int from, int pageSize) {
-		
-		if (logger.isInfoEnabled()) {
-			logger.info("Criteria: {}", criteria);
-		}
-		
-		Results<AnimalDTO> results = new Results<AnimalDTO>();
-		
-		Connection c = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+	public Results<AnimalDTO> findByCriteria(Connection c, AnimalCriteria criteria, 
+											int from, int pageSize) throws Exception {
 
-		try {		
+	    Results<AnimalDTO> results = new Results<>();
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    logger.info("Criteria: {}", criteria);
 
-			c = DAOUtils.getConnection();
+	    try {
+	        StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
+	        List<String> condiciones = new ArrayList<>();
+	        List<Object> parametros = new ArrayList<>();
 
-			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-			
-			
-			List<String> condiciones = new ArrayList<>();
-			List<Object> parametros = new ArrayList<>();
+	        SQLUtils.addClause(criteria.getId(),
+	                condiciones, " a.id = ? ", parametros, criteria.getId());
+	        SQLUtils.addClause(criteria.getNumRegistro(),
+	                condiciones, " UPPER(a.num_registro) LIKE UPPER(?) ",
+	                parametros, "%" + criteria.getNumRegistro() + "%");
+	        SQLUtils.addClause(criteria.getSexoDescripcion(),
+	                condiciones, " UPPER(s.descripcion) LIKE UPPER(?) ",
+	                parametros, "%" + criteria.getSexoDescripcion() + "%");
+	        SQLUtils.addClause(criteria.getFechaNacimiento(),
+	                condiciones, " a.fecha_nacimiento = ? ", parametros, criteria.getFechaNacimiento());
+	        SQLUtils.addClause(criteria.getFechaAlta(),
+	                condiciones, " a.fecha_alta = ? ", parametros, criteria.getFechaAlta());
+	        SQLUtils.addClause(criteria.getFechaBaja(),
+	                condiciones, " a.fecha_baja = ? ", parametros, criteria.getFechaBaja());
+	        SQLUtils.addClause(criteria.getGranjaNif(),
+	                condiciones, " UPPER(g.nif) LIKE UPPER(?) ",
+	                parametros, "%" + criteria.getGranjaNif() + "%");
+	        SQLUtils.addClause(criteria.getNumRegistroMadreInterna(),
+	                condiciones, " UPPER(madre_interna.num_registro) LIKE UPPER(?) ",
+	                parametros, "%" + criteria.getNumRegistroMadreInterna() + "%");
 
-			// Obtener los valores de los criterios
-			SQLUtils.addClause(criteria.getId(),
-			        condiciones, " a.id = ? ", parametros, criteria.getId());
+	        if (!condiciones.isEmpty()) {
+	            sqlBuilder.append(" WHERE ");
+	            sqlBuilder.append(String.join(" AND ", condiciones));
+	        }
 
-			SQLUtils.addClause(criteria.getNumRegistro(),
-			        condiciones, " UPPER(a.num_registro) LIKE UPPER(?) ",
-			        parametros, "%" + criteria.getNumRegistro() + "%");
+	        sqlBuilder.append(ORDER_BY);
+	        String sql = sqlBuilder.toString();
+	        logger.debug("Executing SQL: {}", sql);
+	        logger.debug("Parameters: {}", parametros);
+	        ps = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
+	                ResultSet.CONCUR_READ_ONLY);
+	        DAOUtils.setParameters(ps, parametros);
+	        rs = ps.executeQuery();
+	        List<AnimalDTO> animales = new ArrayList<>();
 
-			SQLUtils.addClause(criteria.getGranjaId(),
-			        condiciones, " a.granja_id = ? ", parametros, criteria.getGranjaId());
-			
-			SQLUtils.addClause(criteria.getSexoId(),
-			        condiciones, " a.sexo_id = ? ", parametros, criteria.getSexoId());
-			
-
-			if (condiciones.size() > 0) {
-				sqlBuilder.append(" WHERE ");
-				sqlBuilder.append( String.join(" AND ", condiciones) );
-			}
-			
-			String sql = sqlBuilder.toString();
-			
-			if (logger.isInfoEnabled()) {
-				logger.info("Criteria SQL: {}", sql);
-			}
-
-			ps = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-					ResultSet.CONCUR_READ_ONLY);
-
-			int i = 1;
-			for (Object parametro: parametros) {
-				ps.setObject(i++, parametro);
-			}
-
-			rs = ps.executeQuery();
-
-			List<AnimalDTO> animales = new ArrayList<AnimalDTO>();
-			 
-			if(from>=1) {
-				int count=0;
-				rs.absolute(from);
-				do {
-					animales.add(loadNext(rs));
-					++count;
-				}while (count<pageSize && rs.next());							
-			}
-			
-			int totalResults =SQLUtils.getTotalRows(rs);
-			
-			results.setPageResults(animales);
-			results.setTotal(totalResults);
-			
-			return results;
-
-		} catch (Exception e) {
-			logger.error("Criteria: {}, Message: {}", criteria.toString(), e.getMessage(), e);
-		} finally {
-			DAOUtils.close(rs, ps, c);
-		}
-		return null;
+	        if (from >= 1 && rs.absolute(from)) {
+	            int count = 0;
+	            do {
+	                animales.add(loadNext(rs));
+	                ++count;
+	            } while (count < pageSize && rs.next());
+	        }
+	        
+	        int totalResults = SQLUtils.getTotalRows(rs);
+	        results.setPageResults(animales);
+	        results.setTotal(totalResults);
+	        return results;
+	    } catch (Exception e) {
+	        logger.error("Criteria: {}, Message: {}", criteria, e.getMessage(), e);
+	        throw e;
+	    } finally {
+	        JDBCUtils.close(rs, ps);
+	    }
 	}
 
 	/**
@@ -316,19 +297,19 @@ public class AnimalDAO {
 	 * @throws Exception
 	 */
 	private AnimalDTO loadNext(ResultSet rs) throws Exception {
-	    int i = 1;
-	   AnimalDTO animal = new AnimalDTO();
+		int i = 1;
+		AnimalDTO animal = new AnimalDTO();
 
-	    animal.setId(rs.getLong(i++));
-	    animal.setNumRegistro(rs.getString(i++));
-	    animal.setGranjaId(rs.getLong(i++));
-	    animal.setSexoId(rs.getLong(i++));
-	    
-	
+		animal.setId(rs.getLong(i++));
+		animal.setNumRegistro(rs.getString(i++));
+		animal.setGranjaId(rs.getLong(i++));
+		animal.setSexoId(rs.getLong(i++));
 
-	    return animal;
+
+
+		return animal;
 	}
-	
+
 }
 
 
