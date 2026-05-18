@@ -1,0 +1,99 @@
+2026-05-18 00:59:02.527 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 00:59:02.542 [main] ERROR com.andreina.ushi.dao.SemillaDAO (:154) - Error listando semillas, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.SemillaDAO.findList(SemillaDAO.java:145) [bin/:?]
+	at com.andreina.ushi.dao.SemillaDAO.findTopByItp(SemillaDAO.java:129) [bin/:?]
+	at com.andreina.ushi.service.impl.SemillaServiceImpl.findTopByItp(SemillaServiceImpl.java:99) [bin/:?]
+	at com.andreina.ushi.service.SemillaServiceTest.testFindTopByItp(SemillaServiceTest.java:18) [bin/:?]
+	at com.andreina.ushi.service.SemillaServiceTest.main(SemillaServiceTest.java:44) [bin/:?]
+2026-05-18 00:59:02.621 [main] ERROR com.andreina.ushi.service.impl.SemillaServiceImpl (:101) - Buscando top semillas por ITP con limite 5: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.SemillaDAO.findList(SemillaDAO.java:145) ~[bin/:?]
+	at com.andreina.ushi.dao.SemillaDAO.findTopByItp(SemillaDAO.java:129) ~[bin/:?]
+	at com.andreina.ushi.service.impl.SemillaServiceImpl.findTopByItp(SemillaServiceImpl.java:99) [bin/:?]
+	at com.andreina.ushi.service.SemillaServiceTest.testFindTopByItp(SemillaServiceTest.java:18) [bin/:?]
+	at com.andreina.ushi.service.SemillaServiceTest.main(SemillaServiceTest.java:44) [bin/:?]
+2026-05-18 01:00:17.477 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:00:17.493 [main] ERROR com.andreina.ushi.dao.TagDAO (:232) - Error listando tags, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.TagDAO.findList(TagDAO.java:223) [bin/:?]
+	at com.andreina.ushi.dao.TagDAO.findDisponible(TagDAO.java:207) [bin/:?]
+	at com.andreina.ushi.service.impl.TagServiceImpl.findDisponible(TagServiceImpl.java:144) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.testFindDisponible(TagServiceTest.java:29) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.main(TagServiceTest.java:69) [bin/:?]
+2026-05-18 01:00:17.534 [main] ERROR com.andreina.ushi.service.impl.TagServiceImpl (:146) - Buscando tags disponibles: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.TagDAO.findList(TagDAO.java:223) ~[bin/:?]
+	at com.andreina.ushi.dao.TagDAO.findDisponible(TagDAO.java:207) ~[bin/:?]
+	at com.andreina.ushi.service.impl.TagServiceImpl.findDisponible(TagServiceImpl.java:144) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.testFindDisponible(TagServiceTest.java:29) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.main(TagServiceTest.java:69) [bin/:?]
+2026-05-18 01:05:19.725 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:05:19.729 [main] ERROR com.andreina.ushi.dao.TagDAO (:232) - Error listando tags, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.TagDAO.findList(TagDAO.java:223) [bin/:?]
+	at com.andreina.ushi.dao.TagDAO.findDisponible(TagDAO.java:207) [bin/:?]
+	at com.andreina.ushi.service.impl.TagServiceImpl.findDisponible(TagServiceImpl.java:144) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.testFindDisponible(TagServiceTest.java:29) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.main(TagServiceTest.java:69) [bin/:?]
+2026-05-18 01:05:19.740 [main] ERROR com.andreina.ushi.service.impl.TagServiceImpl (:146) - Buscando tags disponibles: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.TagDAO.findList(TagDAO.java:223) ~[bin/:?]
+	at com.andreina.ushi.dao.TagDAO.findDisponible(TagDAO.java:207) ~[bin/:?]
+	at com.andreina.ushi.service.impl.TagServiceImpl.findDisponible(TagServiceImpl.java:144) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.testFindDisponible(TagServiceTest.java:29) [bin/:?]
+	at com.andreina.ushi.service.TagServiceTest.main(TagServiceTest.java:69) [bin/:?]
+2026-05-18 01:12:43.227 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:12:43.241 [main] INFO  com.andreina.ushi.dao.AnimalDAO (:166) - Buscando animal con id: 1
+2026-05-18 01:12:43.243 [main] ERROR com.andreina.ushi.dao.AnimalDAO (:178) - Error encontrando animal con id: 1, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.AnimalDAO.findById(AnimalDAO.java:168) [bin/:?]
+	at com.andreina.ushi.dao.AnimalDAOTest.findByIdTest(AnimalDAOTest.java:16) [bin/:?]
+	at com.andreina.ushi.dao.AnimalDAOTest.main(AnimalDAOTest.java:61) [bin/:?]
+2026-05-18 01:19:55.401 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:19:55.422 [main] INFO  com.andreina.ushi.dao.EventoDAO (:214) - Buscando eventos con animal_id: 1
+2026-05-18 01:19:55.423 [main] ERROR com.andreina.ushi.dao.EventoDAO (:225) - Error encontrando eventos con animal_id: 1, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.EventoDAO.findByAnimalId(EventoDAO.java:216) [bin/:?]
+	at com.andreina.ushi.dao.EventoDAOTest.findByAnimalIdTest(EventoDAOTest.java:35) [bin/:?]
+	at com.andreina.ushi.dao.EventoDAOTest.main(EventoDAOTest.java:50) [bin/:?]
+2026-05-18 01:20:14.134 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:20:14.153 [main] INFO  com.andreina.ushi.dao.EventoDAO (:214) - Buscando eventos con animal_id: 1
+2026-05-18 01:20:14.154 [main] ERROR com.andreina.ushi.dao.EventoDAO (:225) - Error encontrando eventos con animal_id: 1, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.EventoDAO.findByAnimalId(EventoDAO.java:216) [bin/:?]
+	at com.andreina.ushi.dao.EventoDAOTest.findByAnimalIdTest(EventoDAOTest.java:35) [bin/:?]
+	at com.andreina.ushi.dao.EventoDAOTest.main(EventoDAOTest.java:50) [bin/:?]
+2026-05-18 01:25:20.140 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:25:20.159 [main] INFO  com.andreina.ushi.dao.GranjaDAO (:130) - Buscando granja con id: 1
+2026-05-18 01:25:20.160 [main] ERROR com.andreina.ushi.dao.GranjaDAO (:137) - Error encontrando granja con id: 1, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.GranjaDAO.findById(GranjaDAO.java:132) [bin/:?]
+	at com.andreina.ushi.dao.GranjaDAOTest.findByIdTest(GranjaDAOTest.java:13) [bin/:?]
+	at com.andreina.ushi.dao.GranjaDAOTest.main(GranjaDAOTest.java:46) [bin/:?]
+2026-05-18 01:28:12.851 [main] FATAL com.andreina.ushi.utils.JDBCUtils (:22) - com.mysql.cj.jdbc.exceptions.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+2026-05-18 01:28:12.859 [main] INFO  com.andreina.ushi.dao.GranjaDAO (:130) - Buscando granja con id: 1
+2026-05-18 01:28:12.860 [main] ERROR com.andreina.ushi.dao.GranjaDAO (:137) - Error encontrando granja con id: 1, Message: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+java.lang.NullPointerException: Cannot invoke "java.sql.Connection.prepareStatement(String)" because "c" is null
+	at com.andreina.ushi.dao.GranjaDAO.findById(GranjaDAO.java:132) [bin/:?]
+	at com.andreina.ushi.dao.GranjaDAOTest.findByIdTest(GranjaDAOTest.java:13) [bin/:?]
+	at com.andreina.ushi.dao.GranjaDAOTest.main(GranjaDAOTest.java:46) [bin/:?]
+2026-05-18 01:29:04.610 [main] INFO  com.andreina.ushi.dao.GranjaDAO (:130) - Buscando granja con id: 1
+2026-05-18 01:29:04.696 [main] ERROR com.andreina.ushi.utils.JDBCUtils (:59) - java.sql.SQLException: Can't call commit when autocommit=true
+2026-05-18 01:34:56.225 [main] INFO  com.andreina.ushi.dao.GranjaDAO (:130) - Buscando granja con id: 1
