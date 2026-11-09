@@ -1,0 +1,103 @@
+package com.andreina.ushi.model;
+
+import java.util.Date;
+
+public class Animal extends AbstractValueObject {
+
+	private Long id = null;
+	private String crotal = null;
+	private Long madreInternaId = null;
+	private Long granjaId = null;
+	private Long sexoId = null;
+	private Long padreExternoId = null;
+	private Long madreExternaId = null;
+	private Date fechaNacimiento = null;
+	private Date fechaAlta = null;
+	private Date fechaBaja = null;
+
+	public Animal() {
+
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getCrotal() {
+		return crotal;
+	}
+
+	public void setCrotal(String crotal) {
+		this.crotal = crotal;
+	}
+
+	public Long getMadreInternaId() {
+		return madreInternaId;
+	}
+
+	public void setMadreInternaId(Long madreInternaId) {
+		this.madreInternaId = madreInternaId;
+	}
+
+	public Long getGranjaId() {
+		return granjaId;
+	}
+
+	public void setGranjaId(Long granjaId) {
+		this.granjaId = granjaId;
+	}
+
+	public Long getSexoId() {
+		return sexoId;
+	}
+
+	public void setSexoId(Long sexoId) {
+		this.sexoId = sexoId;
+	}
+
+	public Long getPadreExternoId() {
+		return padreExternoId;
+	}
+
+	public void setPadreExternoId(Long padreExternoId) {
+		this.padreExternoId = padreExternoId;
+	}
+
+	public Long getMadreExternaId() {
+		return madreExternaId;
+	}
+
+	public void setMadreExternaId(Long madreExternaId) {
+		this.madreExternaId = madreExternaId;
+	}
+
+	public Date getFechaNacimiento() {
+		return fechaNacimiento;
+	}
+
+	public void setFechaNacimiento(Date fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
+	}
+
+	public Date getFechaAlta() {
+		return fechaAlta;
+	}
+
+	public void setFechaAlta(Date fechaAlta) {
+		this.fechaAlta = fechaAlta;
+	}
+
+	public Date getFechaBaja() {
+		return fechaBaja;
+	}
+
+	public void setFechaBaja(Date fechaBaja) {
+		this.fechaBaja = fechaBaja;
+	}
+
+	
+}
