@@ -22,9 +22,13 @@ public class GranjaDAO {
 
 	private static final Logger logger = LogManager.getLogger(GranjaDAO.class.getName());
 
-	private static final String BASE_QUERY = "SELECT g.id, g.codigo_rega, g.nif, g.calle, g.numero, g.CP, g.usuario_id, g.localidad_id "
-			+ "u.nombre AS usuario_nombre, l.nombre AS localidad_nombre " + "FROM granja g "
-			+ "LEFT JOIN usuario u ON u.id = g.usuario_id" + "LEFT JOIN localidad l ON l.id = g.localidad_id";
+	private static final String BASE_QUERY =
+			"SELECT g.id, g.codigo_rega, g.nif, g.calle, g.numero, g.CP, "
+			+ "g.usuario_id, g.localidad_id, "
+			+ "u.nombre AS usuario_nombre, l.nombre AS localidad_nombre "
+			+ "FROM granja g "
+			+ "LEFT JOIN usuario u ON u.id = g.usuario_id "
+			+ "LEFT JOIN localidad l ON l.id = g.localidad_id ";
 	private static final String ORDER_BY = " ORDER BY g.id DESC";
 
 	public GranjaDAO() {
@@ -333,6 +337,7 @@ public class GranjaDAO {
 		granja.setNumero(rs.getInt(i++));
 		granja.setCp(rs.getLong(i++));
 		granja.setUsuarioId(rs.getLong(i++));
+		granja.setLocalidadId(rs.getLong(i++));
 		granja.setUsuarioNombre(rs.getString(i++));
 		granja.setLocalidadNombre(rs.getString(i++));
 		return granja;
