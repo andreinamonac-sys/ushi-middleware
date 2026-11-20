@@ -5,7 +5,6 @@ public class Localidad extends AbstractValueObject {
 		private Long id=null;
 		private String nombre=null;
 		private Long provinciaId=null;
-		private Long granjaId=null;
 		
 		public Localidad() {
 	
@@ -35,13 +34,6 @@ public class Localidad extends AbstractValueObject {
 			this.provinciaId = provinciaId;
 		}
 
-		public Long getGranjaId() {
-			return granjaId;
-		}
-
-		public void setGranjaId(Long granjaId) {
-			this.granjaId = granjaId;
-		}
 		
 		
 		

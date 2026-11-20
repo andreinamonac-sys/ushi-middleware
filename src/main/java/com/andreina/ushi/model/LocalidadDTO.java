@@ -4,7 +4,7 @@ public class LocalidadDTO extends Localidad {
 
 	
 	private String provinciaNombre=null;
-	private String granjaNombre=null;
+	
 	
 	public LocalidadDTO() {
 		super();
@@ -18,13 +18,5 @@ public class LocalidadDTO extends Localidad {
 		this.provinciaNombre = provinciaNombre;
 	}
 
-	public String getGranjaNombre() {
-		return granjaNombre;
-	}
-
-	public void setGranjaNombre(String granjaNombre) {
-		this.granjaNombre = granjaNombre;
-	}
-	
 	
 }

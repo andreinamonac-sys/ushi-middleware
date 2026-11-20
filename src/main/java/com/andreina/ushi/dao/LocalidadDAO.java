@@ -21,7 +21,7 @@ public class LocalidadDAO {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = "SELECT l.id, l.nombre, l.provincia_id, p.nombre AS provincia_nombre, l.granja_id "
+            String sql = "SELECT l.id, l.nombre, l.provincia_id, p.nombre AS provincia_nombre"
                     + "FROM localidad l "
                     + "INNER JOIN provincia p ON p.id = l.provincia_id "
                     + "ORDER BY l.nombre";
@@ -46,7 +46,7 @@ public class LocalidadDAO {
 
         try {
             String sql = "SELECT l.id, l.nombre, l.provincia_id, "
-                    + "p.nombre AS provincia_nombre, l.granja_id "
+                    + "p.nombre AS provincia_nombre"
                     + "FROM localidad l "
                     + "INNER JOIN provincia p ON p.id = l.provincia_id "
                     + "WHERE l.provincia_id = ? "
@@ -75,7 +75,6 @@ public class LocalidadDAO {
         localidad.setNombre(rs.getString(i++));
         localidad.setProvinciaId(rs.getLong(i++));
         localidad.setProvinciaNombre(rs.getString(i++));
-        localidad.setGranjaId(rs.getLong(i++));
         return localidad;
     }
 }

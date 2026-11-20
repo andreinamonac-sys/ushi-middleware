@@ -9,6 +9,7 @@ public class Granja extends AbstractValueObject {
 	private Integer numero=null;
 	private Long cp=null;
 	private Long usuarioId=null;
+	private Long localidadId = null;
 	
 	public Granja() {
 		
@@ -69,6 +70,16 @@ public class Granja extends AbstractValueObject {
 	public void setUsuarioId(Long usuarioId) {
 		this.usuarioId = usuarioId;
 	}
+
+	public Long getLocalidadId() {
+		return localidadId;
+	}
+
+	public void setLocalidadId(Long localidadId) {
+		this.localidadId = localidadId;
+	}
+	
+	
 
 	
 }
