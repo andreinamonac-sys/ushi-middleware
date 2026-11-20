@@ -16,36 +16,17 @@ public class FileUtils {
 	 * @throws IOException
 	 */
 
-	public static void write(byte[] a, String filePath, boolean append) throws IOException {
-
-		FileOutputStream fos = null;
-		File f;
-		try {
-			f = new File(filePath);
-			File parent = f.getAbsoluteFile().getParentFile();
-
-			if (!parent.isDirectory() && !parent.mkdirs() && !parent.isDirectory()) {
-				throw new IOException("No se pudo crear la carpeta: " + parent);
-			}
-
-			fos = new FileOutputStream(f, true);
-			fos.write(a);
-			fos.flush();
-
-		} catch (IOException ioe) {
-
-		} finally {
-			try {
-				if (fos != null) {
-					fos.close();
-				}
-
-			} catch (IOException ignore) {
-				ignore.printStackTrace();
-
-			}
-		}
-	}
+    public static void write(byte[] data, String filePath, boolean append) throws IOException {
+        java.nio.file.Path target = java.nio.file.Paths.get(filePath).toAbsolutePath();
+        java.nio.file.Files.createDirectories(target.getParent());
+        if (append) {
+            java.nio.file.Files.write(target, data, java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.APPEND);
+        } else {
+            java.nio.file.Files.write(target, data, java.nio.file.StandardOpenOption.CREATE,
+                    java.nio.file.StandardOpenOption.TRUNCATE_EXISTING);
+        }
+    }
 
 	/**
 	 * Recupera todo el contenido de un fichero en un array de bytes.

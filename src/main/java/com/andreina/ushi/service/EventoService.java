@@ -51,7 +51,7 @@ public interface EventoService {
 	 * @param animalId
 	 * @return
 	 */
-	public List<EventoDTO> findByAnimalId( Long animalId) throws ServiceException;
+	public List<EventoDTO> findByCrotal( String crotal) throws ServiceException;
 
 	/**
 	 * Encontrar evento por id.

@@ -74,7 +74,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 			mailService.sendEmail(
 					usuario.getEmail(), 
 					"Bienvenido a Ushi!", 
-					"Hola " + usuario.getNombre() + ", bienvenido.", "Ushi");
+					"Hola " + usuario.getNombre() + ", bienvenido.");
 		} catch (MailException e) {
 			// Logueamos pero no lanzamos excepción para no romper el registro
 			// ya que el usuario YA se guardó en la BD.
@@ -135,6 +135,21 @@ public class UsuarioServiceImpl implements UsuarioService {
             JDBCUtils.close(c, true);
         }
     }
+    
+    @Override
+    public List<UsuarioDTO> findVeterinariosByGranjaId(Long granjaId) throws ServiceException{
+    	Connection c = null;
+        try {
+            c = JDBCUtils.getConnection();
+            return dao.findVeterinariosByGranjaId(c, granjaId);
+        } catch (Exception e) {
+            logger.error("Buscando veterinarios asignados a la granja {}: {}", granjaId, e.getMessage(), e);
+            throw new ServiceException(e);
+        } finally {
+            JDBCUtils.close(c, true);
+        }
+    }
+    
 
     @Override
     public boolean update(UsuarioDTO usuario) throws ServiceException {
@@ -224,7 +239,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setPassword(encrypted);
             dao.update(c, usuario);
             mailService.sendEmail(usuario.getEmail(), "Nueva contrasena",
-                    "Tu nueva contrasena es: " + nueva, null);
+                    "Tu nueva contrasena es: " + nueva);
             commit = true;
         } catch (Exception e) {
             logger.error("Reseteando contrasena de email {}: {}", email, e.getMessage(), e);

@@ -97,14 +97,14 @@ public class AnimalServiceImpl implements AnimalService {
     }
 
     @Override
-    public AnimalDTO findByNumRegistro(String numRegistro) throws ServiceException {
-    	if (numRegistro == null) return null;
+    public AnimalDTO findByCrotal(String crotal) throws ServiceException {
+    	if (crotal == null) return null;
         Connection c = null;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByCrotal(c, numRegistro);
+            return dao.findByCrotal(c, crotal);
         } catch (Exception e) {
-            logger.error("Buscando animal por numRegistro {}: {}", numRegistro, e.getMessage(), e);
+            logger.error("Buscando animal por numRegistro {}: {}", crotal, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
             JDBCUtils.close(c, true);

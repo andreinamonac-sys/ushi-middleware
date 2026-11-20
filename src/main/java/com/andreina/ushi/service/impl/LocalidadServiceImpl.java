@@ -14,25 +14,39 @@ import com.andreina.ushi.utils.JDBCUtils;
 
 public class LocalidadServiceImpl implements LocalidadService {
 
-    private static final Logger logger = LogManager.getLogger(LocalidadServiceImpl.class.getName());
+	private static final Logger logger = LogManager.getLogger(LocalidadServiceImpl.class.getName());
 
-    private final LocalidadDAO dao;
+	private final LocalidadDAO dao;
 
-    public LocalidadServiceImpl() {
-        dao = new LocalidadDAO();
-    }
+	public LocalidadServiceImpl() {
+		dao = new LocalidadDAO();
+	}
 
-    @Override
-    public List<LocalidadDTO> findAll() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findAll(c);
-        } catch (Exception e) {
-            logger.error("Listando localidades: {}", e.getMessage(), e);
-            throw new ServiceException(e);
-        } finally {
-            JDBCUtils.close(c, true);
-        }
-    }
+	@Override
+	public List<LocalidadDTO> findAll() throws ServiceException {
+		Connection c = null;
+		try {
+			c = JDBCUtils.getConnection();
+			return dao.findAll(c);
+		} catch (Exception e) {
+			logger.error("Listando localidades: {}", e.getMessage(), e);
+			throw new ServiceException(e);
+		} finally {
+			JDBCUtils.close(c, true);
+		}
+	}
+
+	@Override
+	public List<LocalidadDTO> findLocalidadByProvincia(Long idProvincia) throws ServiceException {
+		Connection c = null;
+		try {
+			c = JDBCUtils.getConnection();
+			return dao.findLocalidadByProvincia(c, idProvincia);
+		} catch (Exception e) {
+			logger.error("Listando localidades por provincia: {}", idProvincia, e);
+			throw new ServiceException(e);
+		} finally {
+			JDBCUtils.close(c, true);
+		}
+	}
 }

@@ -42,7 +42,7 @@ public interface AnimalService {
 	 * @param numRegistro
 	 * @return
 	 */
-	public AnimalDTO findByNumRegistro(String numRegistro) throws ServiceException;
+	public AnimalDTO findByCrotal(String crotal) throws ServiceException;
 
 	/**
 	 * Encontrar animales por criterios de busqueda.

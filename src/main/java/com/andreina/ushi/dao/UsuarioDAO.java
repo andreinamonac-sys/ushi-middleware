@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.andreina.ushi.dao.criteria.UsuarioCriteria;
+import com.andreina.ushi.model.GranjaDTO;
 import com.andreina.ushi.model.Usuario;
 import com.andreina.ushi.model.UsuarioDTO;
 import com.andreina.ushi.utils.DAOUtils;
@@ -23,7 +24,7 @@ public class UsuarioDAO {
 
 	private static final Logger logger = LogManager.getLogger(UsuarioDAO.class.getName());
 
-	private static final String BASE_QUERY = "SELECT u.id, u.dni_nie, u.nombre, u.apellido1, u.apellido2, u.fecha_nacimiento "
+	private static final String BASE_QUERY = "SELECT u.id, u.dni_nie, u.nombre, u.apellido1, u.apellido2, u.fecha_nacimiento, "
 			+ "u.telefono, u.email, u.password, r.id AS rol_id, r.nombre AS rol_nombre " + "FROM usuario u "
 			+ "INNER JOIN rol r ON u.rol_id = r.id ";
 	private static final String ORDER_BY = " ORDER BY u.id DESC";
@@ -44,7 +45,7 @@ public class UsuarioDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			String sql = "INSERT INTO usuario (dni_nie, nombre, apellido1, apellido2, fecha_nacimiento "
+			String sql = "INSERT INTO usuario (dni_nie, nombre, apellido1, apellido2, fecha_nacimiento, "
 					+ "telefono, email, password, rol_id) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
 			logger.debug("Executing SQL: {}", sql);
 			ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -212,6 +213,43 @@ public class UsuarioDAO {
 			JDBCUtils.close(rs, ps);
 		}
 	}
+	
+	/**
+	 * Busca los o el veterinario asociado a una granja.
+	 * @param c Conexión
+	 * @param granjaId ID de la granja
+	 * @return Veterinarios
+	 * @throws Exception
+	 */
+	 public List<UsuarioDTO> findVeterinariosByGranjaId(Connection c, Long granjaId) throws Exception {
+	    	PreparedStatement ps = null;
+	        ResultSet rs = null;
+	        try {
+	            String sql = BASE_QUERY
+	                    + " WHERE EXISTS ("
+	                    + "     SELECT 1 FROM usuario_granja ug"
+	                    + "     WHERE ug.usuario_id = u.id"
+	                    + "       AND ug.granja_id = ?"
+	                    + " )"
+	                    + " AND u.rol_id = ?"
+	                    + ORDER_BY;
+	            logger.info("Buscando veterinarios asignados a la granja {}", granjaId);
+	            logger.debug("Executing SQL: {}", sql);
+	            ps = c.prepareStatement(sql);
+	            DAOUtils.setParameters(ps, granjaId, 2L);
+	            rs = ps.executeQuery();
+	            List<UsuarioDTO> veterinarios = new ArrayList<>();
+	            while (rs.next()) {
+	               veterinarios.add(loadNext(rs));
+	            }
+	            return veterinarios;
+	        } catch (Exception e) {
+	            logger.error("Error buscando veterinarios asignados a la granja: {}, Message: {}", granjaId, e.getMessage(), e);
+	            throw e;
+	        } finally {
+	            JDBCUtils.close(rs, ps);
+	        }
+	    }
 
 	/**
 	 * Ejecuta una consulta que debe devolver como maximo un usuario.
@@ -258,7 +296,7 @@ public class UsuarioDAO {
 		usuario.setApellido1(rs.getString(i++));
 		usuario.setApellido2(rs.getString(i++));
 		usuario.setFechaNacimiento(rs.getDate(i++));
-		usuario.setTelefono(rs.getLong(i++));
+		usuario.setTelefono(rs.getString(i++));
 		usuario.setEmail(rs.getString(i++));
 		usuario.setPassword(rs.getString(i++));
 		usuario.setRolId(rs.getLong(i++));

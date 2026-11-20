@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class EventoCriteria {
 	private Long id = null;
-	private String numRegistro= null;
+	private String crotal= null;
     private Date fechaDesde= null;
     private Date fechaHasta= null;
 	private String descripcion= null;
@@ -28,12 +28,12 @@ public class EventoCriteria {
 		this.id = id;
 	}
 
-	public String getNumRegistro() {
-		return numRegistro;
+	public String getCrotal() {
+		return crotal;
 	}
 
-	public void setNumRegistro(String numRegistro) {
-		this.numRegistro = numRegistro;
+	public void setCrotal(String crotal) {
+		this.crotal = crotal;
 	}
 
 	public Date getFechaDesde() {

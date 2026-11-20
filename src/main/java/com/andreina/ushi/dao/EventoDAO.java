@@ -25,7 +25,7 @@ public class EventoDAO {
     private static final String BASE_QUERY =
             "SELECT e.id, e.fecha_hora, e.descripcion, e.tipo_evento_id, "
             + "te.nombre AS tipo_evento_nombre, "
-            + "e.animal_id, a.crotal AS animal_num_registro, "
+            + "e.animal_id, a.crotal AS animal_crotal, "
             + "e.cria_id, e.veterinario_id, "
             + "v.nombre AS veterinario_nombre, v.apellido1 AS veterinario_apellido, "
             + "e.semilla_id, e.dosis_id, d.num_dosis, e.valor_diagnostico "
@@ -204,15 +204,15 @@ public class EventoDAO {
 	 * @return
 	 * @throws Exception
 	 */
-    public List<EventoDTO> findByAnimalId(Connection c, Long animalId) throws Exception {
+    public List<EventoDTO> findByCrotal(Connection c, String crotal) throws Exception {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             String sql = BASE_QUERY + " WHERE e.animal_id = ?" + ORDER_BY;
-            logger.info("Buscando eventos con animal_id: {}", animalId);
+            logger.info("Buscando eventos con animal_id: {}", crotal);
             logger.debug("Executing SQL: {}", sql);
             ps = c.prepareStatement(sql);
-            DAOUtils.setParameters(ps, animalId);
+            DAOUtils.setParameters(ps, crotal);
             rs = ps.executeQuery();
             List<EventoDTO> eventos = new ArrayList<>();
             while (rs.next()) {
@@ -220,7 +220,7 @@ public class EventoDAO {
             }
             return eventos;
         } catch (Exception e) {
-            logger.error("Error encontrando eventos con animal_id: {}, Message: {}", animalId, e.getMessage(), e);
+            logger.error("Error encontrando eventos con crotal: {}, Message: {}", crotal, e.getMessage(), e);
             throw e;
         } finally {
             JDBCUtils.close(rs, ps);
@@ -249,8 +249,8 @@ public class EventoDAO {
             		parametros, DAOUtils.toTimestamp(criteria.getFechaDesde()));
             SQLUtils.addClause(criteria.getFechaHasta(), condiciones, " e.fecha_hora <= ? ", 
             		parametros, DAOUtils.toTimestamp(criteria.getFechaHasta()));
-            SQLUtils.addClause(criteria.getNumRegistro(), condiciones, " UPPER(a.num_registro) LIKE UPPER(?) ", 
-            		parametros, "%" + criteria.getNumRegistro() + "%");
+            SQLUtils.addClause(criteria.getCrotal(), condiciones, " UPPER(a.crotal) LIKE UPPER(?) ", 
+            		parametros, "%" + criteria.getCrotal() + "%");
             SQLUtils.addClause(criteria.getDescripcion(), condiciones, " UPPER(e.descripcion) LIKE UPPER(?) ", 
             		parametros, "%" + criteria.getDescripcion() + "%");
             SQLUtils.addClause(criteria.getTipoEventoId(), condiciones, " e.tipo_evento_id = ? ", 
@@ -273,6 +273,16 @@ public class EventoDAO {
             if (!condiciones.isEmpty()) {
                 sqlBuilder.append(" WHERE ").append(String.join(" AND ", condiciones));
             }
+            // El total debe incluir todas las coincidencias, antes del LIMIT.
+            String countSql = "SELECT COUNT(*) FROM (" + sqlBuilder.toString() + ") AS eventos_filtrados";
+            try (PreparedStatement countPs = c.prepareStatement(countSql)) {
+                DAOUtils.setParameters(countPs, parametros);
+                try (ResultSet countRs = countPs.executeQuery()) {
+                    if (countRs.next()) {
+                        results.setTotal(countRs.getInt(1));
+                    }
+                }
+            }
             sqlBuilder.append(ORDER_BY);
             sqlBuilder.append(PAGINATION);
             parametros.add(pageSize);
@@ -288,7 +298,6 @@ public class EventoDAO {
                 eventos.add(loadNext(rs));
             }
             results.setPageResults(eventos);
-            results.setTotal(SQLUtils.getTotalRows(rs));
             return results;
         } catch (Exception e) {
             logger.error("Criteria: {}, Message: {}", criteria, e.getMessage(), e);

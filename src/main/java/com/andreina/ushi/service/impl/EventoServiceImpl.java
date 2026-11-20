@@ -109,13 +109,13 @@ public class EventoServiceImpl implements EventoService {
     }
 
     @Override
-    public List<EventoDTO> findByAnimalId(Long animalId) throws ServiceException {
+    public List<EventoDTO> findByCrotal(String crotal) throws ServiceException {
         Connection c = null;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByAnimalId(c, animalId);
+            return dao.findByCrotal(c, crotal);
         } catch (Exception e) {
-            logger.error("Buscando eventos por animal_id {}: {}", animalId, e.getMessage(), e);
+            logger.error("Buscando eventos por crotal {}: {}",crotal, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
             JDBCUtils.close(c, true);

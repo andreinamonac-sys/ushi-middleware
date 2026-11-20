@@ -10,7 +10,7 @@ public class Usuario extends AbstractValueObject {
 	private String apellido1=null;
 	private String apellido2=null;
 	private Date fechaNacimiento = null;
-	private Long telefono=null;
+	private String telefono=null;
 	private String email=null;
 	private String password=null;
 	private Long rolId=null;
@@ -67,11 +67,11 @@ public class Usuario extends AbstractValueObject {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	public Long getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(Long telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 

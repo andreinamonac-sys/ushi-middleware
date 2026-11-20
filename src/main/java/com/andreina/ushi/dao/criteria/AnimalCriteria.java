@@ -5,37 +5,37 @@ import java.util.Date;
 import com.andreina.ushi.model.AbstractValueObject;
 
 public class AnimalCriteria extends AbstractValueObject {
-
-    private Long id = null;
-    private String crotal= null;
-    private String sexoDescripcion= null;
-    private Long sexoId= null;
-    private Date fechaNacimiento= null;
-    private Date fechaNacimientoDesde= null;
-    private Date fechaNacimientoHasta= null;
-    private Date fechaAlta= null;
-    private Date fechaAltaDesde= null;
-    private Date fechaAltaHasta= null;
-    private Date fechaBaja= null;
-    private Date fechaBajaDesde= null;
-    private Date fechaBajaHasta= null;
-    private Long granjaId= null;
-    private String granjaNif= null;
-    private Long padreExternoId= null;
-    private Long madreExternaId= null;
-    private Long madreInternaId= null;
-    private String crotalMadreInterna= null;
+	
+	
+	private Long id = null;
+	private String crotal = null;
+	private String tagAsociado = null;
+	private Long sexoId = null;
+	private Date fechaNacimientoDesde = null;
+	private Date fechaNacimientoHasta = null;
+	private Date fechaAltaDesde = null;
+	private Date fechaAltaHasta = null;
+	private Date fechaBajaDesde = null;
+	private Date fechaBajaHasta = null;
+	private Long granjaId = null;
+	private Long padreExternoId = null;
+	private Long madreExternaId = null;
+	private String crotalMadreInterna = null;
 
     public AnimalCriteria() {
+    	
     }
 
+    
 	public Long getId() {
 		return id;
 	}
 
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 
 	public String getCrotal() {
 		return crotal;
@@ -45,12 +45,12 @@ public class AnimalCriteria extends AbstractValueObject {
 		this.crotal = crotal;
 	}
 
-	public String getSexoDescripcion() {
-		return sexoDescripcion;
+	public String getTagAsociado() {
+		return tagAsociado;
 	}
 
-	public void setSexoDescripcion(String sexoDescripcion) {
-		this.sexoDescripcion = sexoDescripcion;
+	public void setTagAsociado(String tagAsociado) {
+		this.tagAsociado = tagAsociado;
 	}
 
 	public Long getSexoId() {
@@ -59,14 +59,6 @@ public class AnimalCriteria extends AbstractValueObject {
 
 	public void setSexoId(Long sexoId) {
 		this.sexoId = sexoId;
-	}
-
-	public Date getFechaNacimiento() {
-		return fechaNacimiento;
-	}
-
-	public void setFechaNacimiento(Date fechaNacimiento) {
-		this.fechaNacimiento = fechaNacimiento;
 	}
 
 	public Date getFechaNacimientoDesde() {
@@ -85,14 +77,6 @@ public class AnimalCriteria extends AbstractValueObject {
 		this.fechaNacimientoHasta = fechaNacimientoHasta;
 	}
 
-	public Date getFechaAlta() {
-		return fechaAlta;
-	}
-
-	public void setFechaAlta(Date fechaAlta) {
-		this.fechaAlta = fechaAlta;
-	}
-
 	public Date getFechaAltaDesde() {
 		return fechaAltaDesde;
 	}
@@ -107,14 +91,6 @@ public class AnimalCriteria extends AbstractValueObject {
 
 	public void setFechaAltaHasta(Date fechaAltaHasta) {
 		this.fechaAltaHasta = fechaAltaHasta;
-	}
-
-	public Date getFechaBaja() {
-		return fechaBaja;
-	}
-
-	public void setFechaBaja(Date fechaBaja) {
-		this.fechaBaja = fechaBaja;
 	}
 
 	public Date getFechaBajaDesde() {
@@ -141,14 +117,6 @@ public class AnimalCriteria extends AbstractValueObject {
 		this.granjaId = granjaId;
 	}
 
-	public String getGranjaNif() {
-		return granjaNif;
-	}
-
-	public void setGranjaNif(String granjaNif) {
-		this.granjaNif = granjaNif;
-	}
-
 	public Long getPadreExternoId() {
 		return padreExternoId;
 	}
@@ -163,14 +131,6 @@ public class AnimalCriteria extends AbstractValueObject {
 
 	public void setMadreExternaId(Long madreExternaId) {
 		this.madreExternaId = madreExternaId;
-	}
-
-	public Long getMadreInternaId() {
-		return madreInternaId;
-	}
-
-	public void setMadreInternaId(Long madreInternaId) {
-		this.madreInternaId = madreInternaId;
 	}
 
 	public String getCrotalMadreInterna() {

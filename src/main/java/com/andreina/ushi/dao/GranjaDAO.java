@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import com.andreina.ushi.dao.criteria.GranjaCriteria;
 import com.andreina.ushi.model.Granja;
 import com.andreina.ushi.model.GranjaDTO;
+import com.andreina.ushi.model.UsuarioDTO;
 import com.andreina.ushi.utils.DAOUtils;
 import com.andreina.ushi.utils.JDBCUtils;
 import com.andreina.ushi.utils.SQLUtils;
@@ -144,23 +145,26 @@ public class GranjaDAO {
         }
     }
 
-    /**
-     * Ejecuta la operacion DAO correspondiente.
-     * @throws Exception si ocurre un error al acceder o procesar datos.
-     */
-    public GranjaDTO findByNif(Connection c, String nif) throws Exception {
+   /**
+    * Busca una granja por su Código REGA
+    * @param c Conexión
+    * @param rega Código REGA
+    * @return Granja
+    * @throws Exception
+    */
+    public GranjaDTO findByRega(Connection c, String rega) throws Exception {
     	PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = BASE_QUERY + " WHERE g.nif = ?";
-            logger.info("Buscando granja con nif: {}", nif);
+            String sql = BASE_QUERY + " WHERE g.codigo_rega = ?";
+            logger.info("Buscando granja con código REGA: {}", rega);
             logger.debug("Executing SQL: {}", sql);
             ps = c.prepareStatement(sql);
-            DAOUtils.setParameters(ps, nif);
+            DAOUtils.setParameters(ps, rega);
             rs = ps.executeQuery();
             return rs.next() ? loadNext(rs) : null;
         } catch (Exception e) {
-            logger.error("Error encontrando granja con nif: {}, Message: {}", nif, e.getMessage(), e);
+            logger.error("Error encontrando granja con Código REGA: {}, Message: {}", rega, e.getMessage(), e);
             throw e;
         } finally {
             JDBCUtils.close(rs, ps);
@@ -168,25 +172,24 @@ public class GranjaDAO {
     }
 
     /**
-     * Ejecuta la operacion DAO correspondiente.
-     * @param c
-     * @param usuarioId
-     * @return
+     * Busca las granjas a las que tiene acceso el encargado.
+     * @param c Conexión
+     * @param usuarioId ID del usuario
+     * @return Granja o granjas.
      * @throws Exception
      */
-    public List<GranjaDTO> findByEncargadoId(Connection c, Long usuarioId) throws Exception {
+    public List<GranjaDTO> findByEncargadoId(Connection c, Long encargadoId) throws Exception {
     	PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             String sql = BASE_QUERY
-                    + " WHERE g.usuario_id = ? "
-                    + " OR EXISTS (SELECT 1 FROM usuario_granja ug "
-                    + "WHERE ug.granja_id = g.id AND ug.usuario_id = ?) "
+                    + " WHERE g.usuario_id = ?"
                     + ORDER_BY;
-            logger.info("Buscando granjas asignadas al usuario_id: {}", usuarioId);
+            
+            logger.info("Buscando granjas asignadas al encargado: {}", encargadoId);
             logger.debug("Executing SQL: {}", sql);
             ps = c.prepareStatement(sql);
-            DAOUtils.setParameters(ps, usuarioId, usuarioId);
+            DAOUtils.setParameters(ps, encargadoId);
             rs = ps.executeQuery();
             List<GranjaDTO> granjas = new ArrayList<>();
             while (rs.next()) {
@@ -194,12 +197,45 @@ public class GranjaDAO {
             }
             return granjas;
         } catch (Exception e) {
-            logger.error("Error encontrando granjas del usuario_id: {}, Message: {}", usuarioId, e.getMessage(), e);
+            logger.error("Error buscando granjas asociadas al encargado: {}, Message: {}", encargadoId, e.getMessage(), e);
             throw e;
         } finally {
             JDBCUtils.close(rs, ps);
         }
     }
+    
+    /**
+     * Comprueba si un usuario tiene asignada una granja concreta.
+     * @param c Conexión
+     * @param usuarioId 
+     * @param granjaId
+     * @return True si existe asignación y false en caso contrario
+     * @throws Exception
+     */
+    public boolean existeAsignacion(Connection c, Long usuarioId, Long granjaId)
+            throws Exception {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            String sql = "SELECT 1 FROM usuario_granja "
+                    + "WHERE usuario_id = ? AND granja_id = ?";
+
+            logger.debug("Executing SQL: {}", sql);
+            ps = c.prepareStatement(sql);
+            DAOUtils.setParameters(ps, usuarioId, granjaId);
+            rs = ps.executeQuery();
+
+            return rs.next();
+        } catch (Exception e) {
+            logger.error("Error comprobando la asignación del usuario {} a la granja {}",
+                    usuarioId, granjaId, e);
+            throw e;
+        } finally {
+            JDBCUtils.close(rs, ps);
+        }
+    }
+    
 
     /**
      * Ejecuta la operacion DAO correspondiente.

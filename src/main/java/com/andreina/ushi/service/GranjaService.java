@@ -6,6 +6,7 @@ import com.andreina.ushi.dao.criteria.GranjaCriteria;
 import com.andreina.ushi.exception.ServiceException;
 import com.andreina.ushi.model.Granja;
 import com.andreina.ushi.model.GranjaDTO;
+import com.andreina.ushi.model.UsuarioDTO;
 
 public interface GranjaService {
 	
@@ -38,18 +39,27 @@ public interface GranjaService {
 	public GranjaDTO findById(Long id) throws ServiceException;
 
 	/**
-	 * Encontrar granja por su nif.
+	 * Encontrar granja por su código REGA.
 	 * @param nif
 	 * @return
 	 */
-	public GranjaDTO findByNif(String nif) throws ServiceException;
+	public GranjaDTO findByRega(String rega) throws ServiceException;
 
 	/**
 	 * Encontrar granjas por encargado.
-	 * @param usuarioId
-	 * @return
+	 * @param encargadoId ID del encargado
+	 * @return Listado de granjas
 	 */
-	public List<GranjaDTO> findByEncargadoId(Long usuarioId) throws ServiceException;
+	public List<GranjaDTO> findByEncargadoId(Long encargadoId) throws ServiceException;
+	
+	/**
+	 * Comprueba si un usuario tiene acceso a una granja.
+	 * @param usuario
+	 * @param granjaId
+	 * @return True si tiene acceso y false en caso contrario.
+	 * @throws ServiceException
+	 */
+	public boolean tieneAccesoAGranja(UsuarioDTO usuario, Long granjaId) throws ServiceException;
 
 	/**
 	 * Listar todas las granjas.

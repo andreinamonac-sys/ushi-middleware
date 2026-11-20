@@ -12,7 +12,7 @@ public interface MailService {
 	 * @param asunto Asunto del correo
 	 * @param contenido Contenido del correo
 	 */
-	public void sendEmail(String para, String asunto, String contenido, String firma) throws MailException;
+	public void sendEmail(String para, String asunto, String contenido) throws MailException;
 	
 
 	/**
@@ -21,5 +21,5 @@ public interface MailService {
 	 * @param asunto Asunto del correo
 	 * @param contenido Contenido del correo
 	 */
-	public void sendEmail(List<String> para, String asunto, String contenido, String firma) throws MailException;
+	public void sendEmail(List<String> para, String asunto, String contenido) throws MailException;
 }

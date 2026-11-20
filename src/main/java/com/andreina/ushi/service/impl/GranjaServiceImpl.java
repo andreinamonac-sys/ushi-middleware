@@ -11,8 +11,11 @@ import com.andreina.ushi.dao.criteria.GranjaCriteria;
 import com.andreina.ushi.exception.ServiceException;
 import com.andreina.ushi.model.Granja;
 import com.andreina.ushi.model.GranjaDTO;
+import com.andreina.ushi.model.UsuarioDTO;
 import com.andreina.ushi.service.GranjaService;
 import com.andreina.ushi.utils.JDBCUtils;
+import com.andreina.ushi.utils.RolIds;
+
 
 public class GranjaServiceImpl implements GranjaService {
 
@@ -96,14 +99,14 @@ public class GranjaServiceImpl implements GranjaService {
     }
 
     @Override
-    public GranjaDTO findByNif(String nif) throws ServiceException {
-        if (nif == null) return null;
+    public GranjaDTO findByRega(String rega) throws ServiceException {
+        if (rega == null) return null;
         Connection c = null;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByNif(c, nif);
+            return dao.findByRega(c, rega);
         } catch (Exception e) {
-            logger.error("Buscando granja por nif {}: {}", nif, e.getMessage(), e);
+            logger.error("Buscando granja por Código REGA {}: {}", rega, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
             JDBCUtils.close(c, true);
@@ -111,20 +114,57 @@ public class GranjaServiceImpl implements GranjaService {
     }
 
     @Override
-    public List<GranjaDTO> findByEncargadoId(Long usuarioId) throws ServiceException {
-        if (usuarioId == null || usuarioId <= 0) return null;
+    public List<GranjaDTO> findByEncargadoId(Long encargadoId) throws ServiceException {
+        if (encargadoId == null || encargadoId <= 0) return null;
         Connection c = null;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByEncargadoId(c, usuarioId);
+            return dao.findByEncargadoId(c, encargadoId);
         } catch (Exception e) {
-            logger.error("Buscando granjas por encargado {}: {}", usuarioId, e.getMessage(), e);
+            logger.error("Buscando granjas por encargado {}: {}", encargadoId, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
             JDBCUtils.close(c, true);
         }
     }
 
+    
+    @Override
+    public boolean tieneAccesoAGranja(UsuarioDTO usuario, Long granjaId) throws ServiceException {
+        if (usuario == null || usuario.getId() == null
+                || usuario.getRolId() == null || granjaId == null) {
+            return false;
+        }
+
+        Long usuarioId = usuario.getId();
+        Long rolId = usuario.getRolId();
+        Connection c = null;
+
+        try {
+            c = JDBCUtils.getConnection();
+
+            if (RolIds.ADMINISTRADOR.equals(rolId)) {
+                return dao.findById(c, granjaId) != null;
+            }
+
+            if (RolIds.ENCARGADO.equals(rolId)) {
+                GranjaDTO granja = dao.findById(c, granjaId);
+                return granja != null && usuarioId.equals(granja.getUsuarioId());
+            }
+
+            if (RolIds.VETERINARIO.equals(rolId) || RolIds.OPERARIO.equals(rolId)) {
+                return dao.existeAsignacion(c, usuarioId, granjaId);
+            }
+
+            return false;
+        } catch (Exception e) {
+            logger.error("Error al comprobar el acceso del usuario {} a la granja {}",
+                    usuarioId, granjaId, e);
+            throw new ServiceException(e);
+        } finally {
+            JDBCUtils.close(c, true);
+        }
+    }
     @Override
     public List<GranjaDTO> findAll() throws ServiceException {
         Connection c = null;

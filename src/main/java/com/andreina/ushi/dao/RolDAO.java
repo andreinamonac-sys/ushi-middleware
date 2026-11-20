@@ -50,6 +50,8 @@ public class RolDAO {
             JDBCUtils.close(rs, ps);
         }
     }
+    
+    
 
     /**
      * Crea un nuevo rol.

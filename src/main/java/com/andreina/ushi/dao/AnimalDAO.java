@@ -20,112 +20,104 @@ import com.andreina.ushi.utils.SQLUtils;
 
 public class AnimalDAO {
 
-	private static Logger logger = 
-			LogManager.getLogger(AnimalDAO.class.getName());
+	private static Logger logger = LogManager.getLogger(AnimalDAO.class.getName());
 
-	private static final String BASE_QUERY = 
-			"SELECT a.id, a.crotal,a.sexo_id, a.fecha_nacimiento,a.fecha_alta,"
-					+ "a.fecha_baja,a.granja_id, "
-					+ "s.descripcion AS sexo_descripcion, "
-					+ "a.id_padre_externo, "
-					+ "a.id_madre_externa, "
-					+ "a.id_madre_interna, "
-					+ "madre_interna.crotal AS crotal_madre_interna, "
-					+ "g.nif AS granja_nif "
-					+ "FROM animal a "
-					+ "INNER JOIN sexo s ON s.id = a.sexo_id "
-					+ "LEFT JOIN animal madre_interna ON madre_interna.id = a.id_madre_interna "
-					+ "INNER JOIN granja g ON g.id = a.granja_id ";
-					
+	private static final String BASE_QUERY = "SELECT a.id, a.crotal,a.sexo_id, a.fecha_nacimiento,a.fecha_alta,"
+			+ "a.fecha_baja,a.granja_id, " + "s.descripcion AS sexo_descripcion, " + "a.id_padre_externo, "
+			+ "a.id_madre_externa, " + "a.id_madre_interna, " + "madre_interna.crotal AS crotal_madre_interna, "
+			+ "g.nif AS granja_nif " + "FROM animal a " + "INNER JOIN sexo s ON s.id = a.sexo_id "
+			+ "LEFT JOIN animal madre_interna ON madre_interna.id = a.id_madre_interna "
+			+ "INNER JOIN granja g ON g.id = a.granja_id ";
+
 	private static final String ORDER_BY = " ORDER BY a.id DESC";
-	
-	public AnimalDAO() {		
+
+	public AnimalDAO() {
 	}
 
 	/**
-	 * Crear un nuevo animal. 
+	 * Crear un nuevo animal.
+	 * 
 	 * @param animal
 	 * @throws Exception
 	 * @return El animal creado con su id generado.
 	 */
 	public Animal create(Connection c, Animal animal) throws Exception {
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    try {
-	        String sql = " INSERT INTO animal (crotal, sexo_id, "
-	                   + "fecha_nacimiento, fecha_alta, fecha_baja, granja_id, "
-	                   + "id_padre_externo, id_madre_externa, id_madre_interna) "
-	                   + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
-	        
-	        logger.debug("Executing SQL: {}", sql);
-	        ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-	        DAOUtils.setParameters(ps,animal.getCrotal(), 
-	                              animal.getSexoId(), animal.getFechaNacimiento(),
-	                              animal.getFechaAlta(), animal.getFechaBaja(),
-	                              animal.getGranjaId(), animal.getPadreExternoId(),
-	                              animal.getMadreExternaId(), animal.getMadreInternaId());
-	        int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0) {
-                rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                   animal.setId(rs.getLong(1));
-                   logger.info("Animal creado con id: {}", animal.getId());
-                }
-            }
-	        
-	    } catch (Exception e) {
-	    	logger.error("Error creando animal con numRegistro: {} - Message: {}", 
-	                animal.getCrotal(), e.getMessage(), e);
-	        throw e;
-	    } finally {
-	        JDBCUtils.close(rs, ps);
-	    }
-	    return animal;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			String sql = " INSERT INTO animal (crotal, sexo_id, "
+					+ "fecha_nacimiento, fecha_alta, fecha_baja, granja_id, "
+					+ "id_padre_externo, id_madre_externa, id_madre_interna) " + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ";
+
+			logger.debug("Executing SQL: {}", sql);
+			ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			DAOUtils.setParameters(ps, animal.getCrotal(), animal.getSexoId(), animal.getFechaNacimiento(),
+					animal.getFechaAlta(), animal.getFechaBaja(), animal.getGranjaId(), animal.getPadreExternoId(),
+					animal.getMadreExternaId(), animal.getMadreInternaId());
+			int affectedRows = ps.executeUpdate();
+			if (affectedRows > 0) {
+				rs = ps.getGeneratedKeys();
+				if (rs.next()) {
+					animal.setId(rs.getLong(1));
+					logger.info("Animal creado con id: {}", animal.getId());
+				}
+			}
+
+		} catch (Exception e) {
+			logger.error("Error creando animal con numRegistro: {} - Message: {}", animal.getCrotal(), e.getMessage(),
+					e);
+			throw e;
+		} finally {
+			JDBCUtils.close(rs, ps);
+		}
+		return animal;
 	}
+
 	/**
-	 * Actualizar un animal existente. El id del animal a actualizar debe estar presente en el DTO.
+	 * Actualizar un animal existente. El id del animal a actualizar debe estar
+	 * presente en el DTO.
+	 * 
 	 * @param animal
 	 * @throws Exception
 	 * @return Animal actualizado y filas afectadas.
 	 */
 	public boolean update(Connection c, AnimalDTO animal) throws Exception {
 
-	    PreparedStatement ps = null;
-	    try {
-	        java.sql.Date fechaNac = new java.sql.Date(animal.getFechaNacimiento().getTime());
-	        java.sql.Timestamp fechaAlta = new java.sql.Timestamp(animal.getFechaAlta().getTime());
-	        java.sql.Timestamp fechaBaja = animal.getFechaBaja() != null
-	                ? new java.sql.Timestamp(animal.getFechaBaja().getTime()) : null;
+		PreparedStatement ps = null;
+		try {
+			java.sql.Date fechaNac = new java.sql.Date(animal.getFechaNacimiento().getTime());
+			java.sql.Timestamp fechaAlta = new java.sql.Timestamp(animal.getFechaAlta().getTime());
+			java.sql.Timestamp fechaBaja = animal.getFechaBaja() != null
+					? new java.sql.Timestamp(animal.getFechaBaja().getTime())
+					: null;
 
-	        String sql = "UPDATE animal SET crotal = ?, sexo_id = ?, fecha_nacimiento = ?, "
-	                   + "fecha_alta = ?, fecha_baja = ?, granja_id = ?, "
-	                   + "id_padre_externo = ?, id_madre_externa = ?, id_madre_interna = ? "
-	                   + "WHERE id = ?";
+			String sql = "UPDATE animal SET crotal = ?, sexo_id = ?, fecha_nacimiento = ?, "
+					+ "fecha_alta = ?, fecha_baja = ?, granja_id = ?, "
+					+ "id_padre_externo = ?, id_madre_externa = ?, id_madre_interna = ? " + "WHERE id = ?";
 
-	        logger.info("Actualizando animal con id: {}", animal.getId());
-	        logger.debug("Executing SQL: {}", sql);
+			logger.info("Actualizando animal con id: {}", animal.getId());
+			logger.debug("Executing SQL: {}", sql);
 
-	        ps = c.prepareStatement(sql);
-	        DAOUtils.setParameters(ps,
-	                animal.getCrotal(), animal.getSexoId(),
-	                fechaNac, fechaAlta, fechaBaja, animal.getGranjaId(),
-	                animal.getPadreExternoId(), animal.getMadreExternaId(),
-	                animal.getMadreInternaId(), animal.getId());
+			ps = c.prepareStatement(sql);
+			DAOUtils.setParameters(ps, animal.getCrotal(), animal.getSexoId(), fechaNac, fechaAlta, fechaBaja,
+					animal.getGranjaId(), animal.getPadreExternoId(), animal.getMadreExternaId(),
+					animal.getMadreInternaId(), animal.getId());
 
-	        int updatedRows = ps.executeUpdate();
-	        logger.info("Animal con id: {} actualizado, filas afectadas: {}", animal.getId(), updatedRows);
-	        return updatedRows == 1;
+			int updatedRows = ps.executeUpdate();
+			logger.info("Animal con id: {} actualizado, filas afectadas: {}", animal.getId(), updatedRows);
+			return updatedRows == 1;
 
-	    } catch (Exception e) {
-	        logger.error("Animal con id: {}, Message: {}", animal.getId(), e.getMessage(), e);
-	        throw e;
-	    } finally {
-	        JDBCUtils.close(null, ps);
-	    }
+		} catch (Exception e) {
+			logger.error("Animal con id: {}, Message: {}", animal.getId(), e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(null, ps);
+		}
 	}
 
 	/**
 	 * Eliminar un animal por su id.
+	 * 
 	 * @param id
 	 * @throws Exception
 	 * @return true si se eliminó un animal, false si no se encontró el id
@@ -136,13 +128,13 @@ public class AnimalDAO {
 		try {
 			String sql = "DELETE FROM animal WHERE id = ?";
 			logger.info("Eliminando animal con id: {}", id);
-			logger.debug("Executing SQL: {}", sql );
-			ps = c.prepareStatement(sql );
+			logger.debug("Executing SQL: {}", sql);
+			ps = c.prepareStatement(sql);
 			int i = 1;
 			ps.setLong(i++, id);
-			int deleted = ps.executeUpdate();	
+			int deleted = ps.executeUpdate();
 			logger.info("Animal con id: {} eliminado, filas afectadas: {}", id, deleted);
-			return deleted==1;
+			return deleted == 1;
 		} catch (Exception e) {
 			logger.error("Error eliminando animal con id: {}, Message: {}", id, e.getMessage(), e);
 			throw e;
@@ -153,6 +145,7 @@ public class AnimalDAO {
 
 	/**
 	 * Encontrar animal por su id.
+	 * 
 	 * @param id
 	 * @throws Exception
 	 * @return El animal encontrado.
@@ -162,21 +155,21 @@ public class AnimalDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		AnimalDTO animal = null;
-		try {			
+		try {
 			String sql = BASE_QUERY + " WHERE a.id = ? ";
 			logger.info("Buscando animal con id: {}", id);
 			logger.debug("Executing SQL: {}", sql);
 			ps = c.prepareStatement(sql);
-			DAOUtils.setParameters(ps, id);				
+			DAOUtils.setParameters(ps, id);
 			rs = ps.executeQuery();
-			
+
 			if (rs.next()) {
-				animal= loadNext(rs);
-				 logger.info("Animal encontrado: {}", animal);
+				animal = loadNext(rs);
+				logger.info("Animal encontrado: {}", animal);
 			}
-			return animal;				
+			return animal;
 		} catch (Exception e) {
-			logger.error("Error encontrando animal con id: {}, Message: {}",id, e.getMessage(), e);
+			logger.error("Error encontrando animal con id: {}, Message: {}", id, e.getMessage(), e);
 			throw e;
 		} finally {
 			JDBCUtils.close(rs, ps);
@@ -185,6 +178,7 @@ public class AnimalDAO {
 
 	/**
 	 * Encontrar animal por su num_registro.
+	 * 
 	 * @param numRegistro
 	 * @throws Exception
 	 * @return El animal encontrado.
@@ -193,21 +187,21 @@ public class AnimalDAO {
 
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		AnimalDTO animal = null; 
+		AnimalDTO animal = null;
 
-		try {			
+		try {
 			String sql = BASE_QUERY + " WHERE a.crotal = ? ";
 			logger.info("Buscando animal con numRegistro: {}", crotal);
 			logger.debug("Executing SQL: {}", sql);
-			
+
 			ps = c.prepareStatement(sql);
-			DAOUtils.setParameters(ps, crotal);				
+			DAOUtils.setParameters(ps, crotal);
 			rs = ps.executeQuery();
 			if (rs.next()) {
 				animal = loadNext(rs);
 				logger.info("Animal encontrado: {}", animal);
 			}
-			return animal;			
+			return animal;
 		} catch (Exception e) {
 			logger.error("Error encontrando animal con crotal: {}, Message: {}", crotal, e.getMessage(), e);
 			throw e;
@@ -217,104 +211,97 @@ public class AnimalDAO {
 	}
 
 	/**
-	 * Encontrar animales por sus atributos. Puede que alguno de los parametros sea null.
+	 * Encontrar animales por sus atributos. Puede que alguno de los parametros sea
+	 * null.
+	 * 
 	 * @param criteria
 	 * @throws Exception
-	 * @return Resultados paginados de animales que cumplen los criterios de búsqueda.
+	 * @return Resultados paginados de animales que cumplen los criterios de
+	 *         búsqueda.
 	 */
-	public Results<AnimalDTO> findByCriteria(Connection c, AnimalCriteria criteria, 
-											int from, int pageSize) throws Exception {
+	public Results<AnimalDTO> findByCriteria(Connection c, AnimalCriteria criteria, int from, int pageSize)
+			throws Exception {
 
-	    Results<AnimalDTO> results = new Results<>();
-	    PreparedStatement ps = null;
-	    ResultSet rs = null;
-	    logger.info("Criteria: {}", criteria);
+		Results<AnimalDTO> results = new Results<>();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		logger.info("Criteria: {}", criteria);
 
-	    try {
-	        StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
-	        List<String> condiciones = new ArrayList<>();
-	        List<Object> parametros = new ArrayList<>();
+		try {
+			StringBuilder sqlBuilder = new StringBuilder(BASE_QUERY);
+			List<String> condiciones = new ArrayList<>();
+			List<Object> parametros = new ArrayList<>();
 
-	        SQLUtils.addClause(criteria.getId(),
-	                condiciones, " a.id = ? ", parametros, criteria.getId());
-	        SQLUtils.addClause(criteria.getCrotal(),
-	                condiciones, " UPPER(a.crotal) LIKE UPPER(?) ",
-	                parametros, "%" + criteria.getCrotal() + "%");
-	        SQLUtils.addClause(criteria.getSexoDescripcion(),
-	                condiciones, " UPPER(s.descripcion) LIKE UPPER(?) ",
-	                parametros, "%" + criteria.getSexoDescripcion() + "%");
-	        SQLUtils.addClause(criteria.getSexoId(),
-	                condiciones, " a.sexo_id = ? ", parametros, criteria.getSexoId());
-	        SQLUtils.addClause(criteria.getFechaNacimiento(),
-	                condiciones, " a.fecha_nacimiento = ? ", parametros, criteria.getFechaNacimiento());
-	        SQLUtils.addClause(criteria.getFechaNacimientoDesde(),
-	                condiciones, " a.fecha_nacimiento >= ? ", parametros, criteria.getFechaNacimientoDesde());
-	        SQLUtils.addClause(criteria.getFechaNacimientoHasta(),
-	                condiciones, " a.fecha_nacimiento <= ? ", parametros, criteria.getFechaNacimientoHasta());
-	        SQLUtils.addClause(criteria.getFechaAlta(),
-	                condiciones, " a.fecha_alta = ? ", parametros, criteria.getFechaAlta());
-	        SQLUtils.addClause(criteria.getFechaAltaDesde(),
-	                condiciones, " a.fecha_alta >= ? ", parametros, criteria.getFechaAltaDesde());
-	        SQLUtils.addClause(criteria.getFechaAltaHasta(),
-	                condiciones, " a.fecha_alta <= ? ", parametros, criteria.getFechaAltaHasta());
-	        SQLUtils.addClause(criteria.getFechaBaja(),
-	                condiciones, " a.fecha_baja = ? ", parametros, criteria.getFechaBaja());
-	        SQLUtils.addClause(criteria.getFechaBajaDesde(),
-	                condiciones, " a.fecha_baja >= ? ", parametros, criteria.getFechaBajaDesde());
-	        SQLUtils.addClause(criteria.getFechaBajaHasta(),
-	                condiciones, " a.fecha_baja <= ? ", parametros, criteria.getFechaBajaHasta());
-	        SQLUtils.addClause(criteria.getGranjaId(),
-	                condiciones, " a.granja_id = ? ", parametros, criteria.getGranjaId());
-	        SQLUtils.addClause(criteria.getGranjaNif(),
-	                condiciones, " UPPER(g.nif) LIKE UPPER(?) ",
-	                parametros, "%" + criteria.getGranjaNif() + "%");
-	        SQLUtils.addClause(criteria.getPadreExternoId(),
-	                condiciones, " a.id_padre_externo = ? ", parametros, criteria.getPadreExternoId());
-	        SQLUtils.addClause(criteria.getMadreExternaId(),
-	                condiciones, " a.id_madre_externa = ? ", parametros, criteria.getMadreExternaId());
-	        SQLUtils.addClause(criteria.getMadreInternaId(),
-	                condiciones, " a.id_madre_interna = ? ", parametros, criteria.getMadreInternaId());
-	        SQLUtils.addClause(criteria.getCrotalMadreInterna(),
-	                condiciones, " UPPER(madre_interna.crotal) LIKE UPPER(?) ",
-	                parametros, "%" + criteria.getCrotalMadreInterna() + "%");
+			SQLUtils.addClause(criteria.getId(), condiciones, " a.id = ? ", parametros, criteria.getId());
+			SQLUtils.addClause(criteria.getCrotal(), condiciones, " UPPER(a.crotal) LIKE UPPER(?) ", parametros,
+					"%" + criteria.getCrotal() + "%");
+			SQLUtils.addClause(criteria.getTagAsociado(), condiciones, 
+					" EXISTS ("
+                    + "SELECT 1 FROM parametro p "
+                    + "INNER JOIN tag t ON t.id = p.tag_id "
+                    + "WHERE p.animal_id = a.id "
+                    + "AND UPPER(t.numero) LIKE UPPER(?)"
+                    + ") ", parametros,
+					"%" + criteria.getTagAsociado() + "%");
+			SQLUtils.addClause(criteria.getFechaNacimientoDesde(), condiciones, " a.fecha_nacimiento >= ? ", parametros,
+					criteria.getFechaNacimientoDesde());
+			SQLUtils.addClause(criteria.getFechaNacimientoHasta(), condiciones, " a.fecha_nacimiento <= ? ", parametros,
+					criteria.getFechaNacimientoHasta());
+			SQLUtils.addClause(criteria.getFechaAltaDesde(), condiciones, " a.fecha_alta >= ? ", parametros,
+					criteria.getFechaAltaDesde());
+			SQLUtils.addClause(criteria.getFechaAltaHasta(), condiciones, " a.fecha_alta <= ? ", parametros,
+					criteria.getFechaAltaHasta());
+			SQLUtils.addClause(criteria.getFechaBajaDesde(), condiciones, " a.fecha_baja >= ? ", parametros,
+					criteria.getFechaBajaDesde());
+			SQLUtils.addClause(criteria.getFechaBajaHasta(), condiciones, " a.fecha_baja <= ? ", parametros,
+					criteria.getFechaBajaHasta());
+			SQLUtils.addClause(criteria.getGranjaId(), condiciones, " a.granja_id = ? ", parametros,
+					criteria.getGranjaId());
+			SQLUtils.addClause(criteria.getPadreExternoId(), condiciones, " a.id_padre_externo = ? ", parametros,
+					criteria.getPadreExternoId());
+			SQLUtils.addClause(criteria.getMadreExternaId(), condiciones, " a.id_madre_externa = ? ", parametros,
+					criteria.getMadreExternaId());
+			SQLUtils.addClause(criteria.getCrotalMadreInterna(), condiciones,
+					" UPPER(madre_interna.crotal) LIKE UPPER(?) ", parametros,
+					"%" + criteria.getCrotalMadreInterna() + "%");
 
-	        if (!condiciones.isEmpty()) {
-	            sqlBuilder.append(" WHERE ");
-	            sqlBuilder.append(String.join(" AND ", condiciones));
-	        }
+			if (!condiciones.isEmpty()) {
+				sqlBuilder.append(" WHERE ");
+				sqlBuilder.append(String.join(" AND ", condiciones));
+			}
 
-	        sqlBuilder.append(ORDER_BY);
-	        String sql = sqlBuilder.toString();
-	        logger.debug("Executing SQL: {}", sql);
-	        logger.debug("Parameters: {}", parametros);
-	        ps = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE,
-	                ResultSet.CONCUR_READ_ONLY);
-	        DAOUtils.setParameters(ps, parametros);
-	        rs = ps.executeQuery();
-	        List<AnimalDTO> animales = new ArrayList<>();
+			sqlBuilder.append(ORDER_BY);
+			String sql = sqlBuilder.toString();
+			logger.debug("Executing SQL: {}", sql);
+			logger.debug("Parameters: {}", parametros);
+			ps = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			DAOUtils.setParameters(ps, parametros);
+			rs = ps.executeQuery();
+			List<AnimalDTO> animales = new ArrayList<>();
 
-	        if (from >= 1 && rs.absolute(from)) {
-	            int count = 0;
-	            do {
-	                animales.add(loadNext(rs));
-	                ++count;
-	            } while (count < pageSize && rs.next());
-	        }
-	        
-	        int totalResults = SQLUtils.getTotalRows(rs);
-	        results.setPageResults(animales);
-	        results.setTotal(totalResults);
-	        return results;
-	    } catch (Exception e) {
-	        logger.error("Criteria: {}, Message: {}", criteria, e.getMessage(), e);
-	        throw e;
-	    } finally {
-	        JDBCUtils.close(rs, ps);
-	    }
+			if (from >= 1 && rs.absolute(from)) {
+				int count = 0;
+				do {
+					animales.add(loadNext(rs));
+					++count;
+				} while (count < pageSize && rs.next());
+			}
+
+			int totalResults = SQLUtils.getTotalRows(rs);
+			results.setPageResults(animales);
+			results.setTotal(totalResults);
+			return results;
+		} catch (Exception e) {
+			logger.error("Criteria: {}, Message: {}", criteria, e.getMessage(), e);
+			throw e;
+		} finally {
+			JDBCUtils.close(rs, ps);
+		}
 	}
 
 	/**
 	 * Cargar un animal desde el ResultSet actual.
+	 * 
 	 * @param rs
 	 * @return
 	 * @throws Exception
@@ -341,5 +328,3 @@ public class AnimalDAO {
 	}
 
 }
-
-
