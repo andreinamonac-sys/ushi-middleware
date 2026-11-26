@@ -13,7 +13,7 @@ public interface TagService {
 	 * @param tag
 	 * @return
 	 */
-	public Long create(Tag tag)throws ServiceException;
+	public Tag create(Tag tag)throws ServiceException;
 
 	/**
 	 * Actualizar un tag existente.

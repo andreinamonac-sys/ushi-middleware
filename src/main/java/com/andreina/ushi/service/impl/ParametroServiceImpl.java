@@ -35,7 +35,7 @@ public class ParametroServiceImpl implements ParametroService {
             commit = true;
             return result != null ? result.getId() : null;
         } catch (Exception e) {
-            logger.error("Creando {}: {}", parametro, e.getMessage(), e);
+            logger.error("Creando parámetro{}: {}", parametro, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
             JDBCUtils.close(c, commit);
@@ -44,15 +44,19 @@ public class ParametroServiceImpl implements ParametroService {
 
     @Override
     public List<ParametroDTO> findByCriteria(ParametroCriteria criteria, int from, int pageSize) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findByCriteria(c, criteria, from, pageSize);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<ParametroDTO> results = dao.findByCriteria(c, criteria, from, pageSize);
+             commit = true;
+            return results;
         } catch (Exception e) {
-            logger.error("Buscando {}: {}", criteria, e.getMessage(), e);
+            logger.error("Buscando parámetros{}: {}", criteria, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

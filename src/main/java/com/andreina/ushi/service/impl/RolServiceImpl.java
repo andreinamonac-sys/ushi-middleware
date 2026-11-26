@@ -24,15 +24,19 @@ public class RolServiceImpl implements RolService {
 
     @Override
     public List<Rol> findAll() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findAll(c);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<Rol> results = dao.findAll(c);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Listando roles: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

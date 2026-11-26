@@ -23,7 +23,7 @@ public class SemillaServiceImpl implements SemillaService {
     }
 
     @Override
-    public Long create(Semilla semilla) throws ServiceException {
+    public Semilla create(Semilla semilla) throws ServiceException {
         Connection c = null;
         boolean commit = false;
         try {
@@ -31,7 +31,7 @@ public class SemillaServiceImpl implements SemillaService {
             c.setAutoCommit(false);
             Semilla result = dao.create(c, semilla);
             commit = true;
-            return result != null ? result.getId() : null;
+            return result;
         } catch (Exception e) {
             logger.error("Creando {}: {}", semilla, e.getMessage(), e);
             throw new ServiceException(e);
@@ -80,29 +80,37 @@ public class SemillaServiceImpl implements SemillaService {
 
     @Override
     public List<Semilla> findByMeritoNetoGreaterThan(Integer minimo) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findByMeritoNetoGreaterThan(c, minimo);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<Semilla> results = dao.findByMeritoNetoGreaterThan(c, minimo);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando semillas con merito neto mayor que {}: {}", minimo, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<Semilla> findTopByItp(Integer limite) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findTopByItp(c, limite);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<Semilla> results = dao.findTopByItp(c, limite);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando top semillas por ITP con limite {}: {}", limite, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

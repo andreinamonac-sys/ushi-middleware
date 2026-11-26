@@ -13,7 +13,7 @@ public interface SemillaService {
 	 * @param semilla
 	 * @return
 	 */
-	public Long create(Semilla semilla) throws ServiceException;
+	public Semilla create(Semilla semilla) throws ServiceException;
 
 	/**
 	 * Actualizar una semilla existente.

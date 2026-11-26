@@ -23,7 +23,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Long create(Tag tag) throws ServiceException {
+    public Tag create(Tag tag) throws ServiceException {
         Connection c = null;
         boolean commit = false;
         try {
@@ -31,7 +31,7 @@ public class TagServiceImpl implements TagService {
             c.setAutoCommit(false);
             Tag result = dao.create(c, tag);
             commit = true;
-            return result != null ? result.getId() : null;
+            return result;
         } catch (Exception e) {
             logger.error("Creando {}: {}", tag, e.getMessage(), e);
             throw new ServiceException(e);
@@ -82,14 +82,18 @@ public class TagServiceImpl implements TagService {
     public Tag findById(Long id) throws ServiceException {
         if (id == null || id <= 0) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findById(c, id);
+            c.setAutoCommit(false);
+            Tag result = dao.findById(c, id);
+            commit = true;
+            return result;
         } catch (Exception e) {
             logger.error("Buscando tag por id {}: {}", id, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
@@ -97,14 +101,18 @@ public class TagServiceImpl implements TagService {
     public Tag findByNumero(String numero) throws ServiceException {
         if (numero == null) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByNumero(c, numero);
+            c.setAutoCommit(false);
+            Tag result = dao.findByNumero(c, numero);
+            commit = true;
+            return result;
         } catch (Exception e) {
             logger.error("Buscando tag por numero {}: {}", numero, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
@@ -112,42 +120,54 @@ public class TagServiceImpl implements TagService {
     public List<Tag> findByAnimalId(Long animalId) throws ServiceException {
         if (animalId == null || animalId <= 0) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByAnimalId(c, animalId);
+            c.setAutoCommit(false);
+            List<Tag> results = dao.findByAnimalId(c, animalId);
+            commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando tags por animal {}: {}", animalId, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<Tag> findConIncidencias() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findConIncidencias(c);
+    	  Connection c = null;
+          boolean commit = false;
+          try {
+              c = JDBCUtils.getConnection();
+              c.setAutoCommit(false);
+              List<Tag> results = dao.findConIncidencias(c);
+              commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando tags con incidencias: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<Tag> findDisponible() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findDisponible(c);
+    	  Connection c = null;
+          boolean commit = false;
+          try {
+              c = JDBCUtils.getConnection();
+              c.setAutoCommit(false);
+              List<Tag> results = dao.findDisponible(c);
+              commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando tags disponibles: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

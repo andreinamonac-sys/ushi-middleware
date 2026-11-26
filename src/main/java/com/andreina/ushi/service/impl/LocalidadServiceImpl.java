@@ -25,28 +25,36 @@ public class LocalidadServiceImpl implements LocalidadService {
 	@Override
 	public List<LocalidadDTO> findAll() throws ServiceException {
 		Connection c = null;
+		boolean commit = false;
 		try {
 			c = JDBCUtils.getConnection();
-			return dao.findAll(c);
+			c.setAutoCommit(false);
+			List<LocalidadDTO> results = dao.findAll(c);
+			commit = true;
+			return results;
 		} catch (Exception e) {
 			logger.error("Listando localidades: {}", e.getMessage(), e);
 			throw new ServiceException(e);
 		} finally {
-			JDBCUtils.close(c, true);
+			JDBCUtils.close(c, commit);
 		}
 	}
 
 	@Override
 	public List<LocalidadDTO> findLocalidadByProvincia(Long idProvincia) throws ServiceException {
 		Connection c = null;
+		boolean commit = false;
 		try {
 			c = JDBCUtils.getConnection();
-			return dao.findLocalidadByProvincia(c, idProvincia);
+			c.setAutoCommit(false);
+			List<LocalidadDTO> results = dao.findLocalidadByProvincia(c, idProvincia);
+			commit = true;
+			return results;
 		} catch (Exception e) {
 			logger.error("Listando localidades por provincia: {}", idProvincia, e);
 			throw new ServiceException(e);
 		} finally {
-			JDBCUtils.close(c, true);
+			JDBCUtils.close(c, commit);
 		}
 	}
 }

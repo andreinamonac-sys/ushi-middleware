@@ -24,15 +24,19 @@ public class ProvinciaServiceImpl implements ProvinciaService {
 
     @Override
     public List<Provincia> findAll() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findAll(c);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<Provincia> results = dao.findAll(c);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Listando provincias: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

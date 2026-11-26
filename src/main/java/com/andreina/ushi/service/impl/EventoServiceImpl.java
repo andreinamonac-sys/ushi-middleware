@@ -82,57 +82,73 @@ public class EventoServiceImpl implements EventoService {
     @Override
     public Results<EventoDTO> findByCriteria(EventoCriteria criteria,
                                               int from, int pageSize) throws ServiceException {
-        Connection c = null;
+    	Connection c = null;
+        boolean commit = false;
         try {
-            c = JDBCUtils.getConnection();
-            return dao.findByCriteria(c, criteria, from, pageSize);
+        	c = JDBCUtils.getConnection();
+            c.setAutoCommit(false);
+            Results<EventoDTO> results = dao.findByCriteria(c, criteria, from, pageSize);
+            commit=true;
+            return results;
         } catch (Exception e) {
-            logger.error("Buscando {}: {}", criteria, e.getMessage(), e);
+            logger.error("Buscando eventos{}: {}", criteria, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<EventoDTO> findByTipoEventoId(Long tipoEventoId) throws ServiceException {
-        Connection c = null;
+    	 Connection c = null;
+         boolean commit = false;
         try {
-            c = JDBCUtils.getConnection();
-            return dao.findByTipoEventoId(c, tipoEventoId);
+        	 c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<EventoDTO> results = dao.findByTipoEventoId(c, tipoEventoId);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando eventos por tipo {}: {}", tipoEventoId, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<EventoDTO> findByCrotal(String crotal) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findByCrotal(c, crotal);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<EventoDTO> results = dao.findByCrotal(c, crotal);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando eventos por crotal {}: {}",crotal, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public EventoDTO findById(Long id) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findById(c, id);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             EventoDTO evento =  dao.findById(c, id);
+             commit = true;
+            return evento;
         } catch (Exception e) {
             logger.error("Buscando evento por id {}: {}", id, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 }

@@ -87,14 +87,18 @@ public class GranjaServiceImpl implements GranjaService {
     public GranjaDTO findById(Long id) throws ServiceException {
         if (id == null || id <= 0) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findById(c, id);
+            c.setAutoCommit(false);
+            GranjaDTO granja = dao.findById(c, id);
+            commit = true;
+            return granja;
         } catch (Exception e) {
             logger.error("Buscando granja por id {}: {}", id, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
@@ -102,14 +106,18 @@ public class GranjaServiceImpl implements GranjaService {
     public GranjaDTO findByRega(String rega) throws ServiceException {
         if (rega == null) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByRega(c, rega);
+            c.setAutoCommit(false);
+            GranjaDTO granja = dao.findByRega(c, rega);
+            commit = true;
+            return granja;
         } catch (Exception e) {
             logger.error("Buscando granja por Código REGA {}: {}", rega, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
@@ -117,14 +125,18 @@ public class GranjaServiceImpl implements GranjaService {
     public List<GranjaDTO> findByEncargadoId(Long encargadoId) throws ServiceException {
         if (encargadoId == null || encargadoId <= 0) return null;
         Connection c = null;
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
-            return dao.findByEncargadoId(c, encargadoId);
+            c.setAutoCommit(false);
+            List<GranjaDTO> results = dao.findByEncargadoId(c, encargadoId);
+            commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando granjas por encargado {}: {}", encargadoId, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
@@ -139,9 +151,10 @@ public class GranjaServiceImpl implements GranjaService {
         Long usuarioId = usuario.getId();
         Long rolId = usuario.getRolId();
         Connection c = null;
-
+        boolean commit = false;
         try {
             c = JDBCUtils.getConnection();
+            c.setAutoCommit(false);
 
             if (RolIds.ADMINISTRADOR.equals(rolId)) {
                 return dao.findById(c, granjaId) != null;
@@ -155,41 +168,49 @@ public class GranjaServiceImpl implements GranjaService {
             if (RolIds.VETERINARIO.equals(rolId) || RolIds.OPERARIO.equals(rolId)) {
                 return dao.existeAsignacion(c, usuarioId, granjaId);
             }
-
+            commit = true;
             return false;
         } catch (Exception e) {
             logger.error("Error al comprobar el acceso del usuario {} a la granja {}",
                     usuarioId, granjaId, e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c,commit);
         }
     }
     @Override
     public List<GranjaDTO> findAll() throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findAll(c);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<GranjaDTO> results = dao.findAll(c); 
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Listando granjas: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<GranjaDTO> findByCriteria(GranjaCriteria criteria) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findByCriteria(c, criteria == null ? new GranjaCriteria() : criteria);
+    	 Connection c = null;
+         boolean commit = false;
+         try {
+             c = JDBCUtils.getConnection();
+             c.setAutoCommit(false);
+             List<GranjaDTO> results = dao.findByCriteria(c, criteria == null ? new GranjaCriteria() : criteria);
+             commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando granjas por criterios: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c,  commit);
         }
     }
 }

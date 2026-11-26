@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import com.andreina.ushi.dao.AlertaDAO;
 import com.andreina.ushi.exception.ServiceException;
 import com.andreina.ushi.model.AlertaDTO;
+import com.andreina.ushi.model.Animal;
 import com.andreina.ushi.service.AlertaService;
 import com.andreina.ushi.utils.JDBCUtils;
 
@@ -23,15 +24,20 @@ public class AlertaServiceImpl implements AlertaService {
 
     @Override
     public List<AlertaDTO> findUltimas(int limit) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findUltimas(c, limit);
+       
+        	 Connection c = null;
+             boolean commit = false;
+             try {
+                 c = JDBCUtils.getConnection();
+                 c.setAutoCommit(false);
+                 List<AlertaDTO> result = dao.findUltimas(c, limit);
+                 commit = true;
+                 return result;
         } catch (Exception e) {
             logger.error("Buscando alertas: {}", e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 

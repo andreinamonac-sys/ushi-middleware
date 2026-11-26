@@ -76,9 +76,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 					"Bienvenido a Ushi!", 
 					"Hola " + usuario.getNombre() + ", bienvenido.");
 		} catch (MailException e) {
-			// Logueamos pero no lanzamos excepción para no romper el registro
-			// ya que el usuario YA se guardó en la BD.
-			
 			logger.warn("No se pudo enviar el email a {}", usuario.getEmail());
 		}
 	}
@@ -90,12 +87,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 		try {
 			c = JDBCUtils.getConnection();
 			c.setAutoCommit(false);
-			UsuarioDTO encontrado = dao.findById(c, id);
+			UsuarioDTO result= dao.findById(c, id);
 			commit = true;
-			return encontrado;
-		} catch (ServiceException e) {
-			logger.error("Error de persistencia al buscar usuario con id{}: {}", id, e.getMessage());
-			throw new ServiceException(e);
+			return result;
 		} catch (Exception e) {
 			logger.error("Error buscando usuario por id {}: {}", id, e.getMessage(), e);
 			throw new ServiceException(e);
@@ -106,10 +100,13 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO login(String email, String password) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
+    	  Connection c = null;
+          boolean commit = false;
+          try {
+              c = JDBCUtils.getConnection();
+              c.setAutoCommit(false);
             UsuarioDTO usuario = dao.findByEmail(c, email);
+            commit = true;
             if (usuario == null) {
                 return null;
             }
@@ -118,35 +115,43 @@ public class UsuarioServiceImpl implements UsuarioService {
             logger.error("Login de usuario {}: {}", email, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
 
     @Override
     public List<UsuarioDTO> findByCriteria(UsuarioCriteria usuario, int from, int pageSize) throws ServiceException {
-        Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findByCriteria(c, usuario, from, pageSize);
+    	  Connection c = null;
+          boolean commit = false;
+          try {
+              c = JDBCUtils.getConnection();
+              c.setAutoCommit(false);
+              List<UsuarioDTO> results = dao.findByCriteria(c, usuario, from, pageSize);
+              commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando {}: {}", usuario, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
     
     @Override
     public List<UsuarioDTO> findVeterinariosByGranjaId(Long granjaId) throws ServiceException{
-    	Connection c = null;
-        try {
-            c = JDBCUtils.getConnection();
-            return dao.findVeterinariosByGranjaId(c, granjaId);
+    	  Connection c = null;
+          boolean commit = false;
+          try {
+              c = JDBCUtils.getConnection();
+              c.setAutoCommit(false);
+              List<UsuarioDTO> results =  dao.findVeterinariosByGranjaId(c, granjaId);
+              commit = true;
+            return results;
         } catch (Exception e) {
             logger.error("Buscando veterinarios asignados a la granja {}: {}", granjaId, e.getMessage(), e);
             throw new ServiceException(e);
         } finally {
-            JDBCUtils.close(c, true);
+            JDBCUtils.close(c, commit);
         }
     }
     
